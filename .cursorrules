@@ -1,0 +1,322 @@
+# LaunchKit — Cursor Rules
+# Version: Milestone 3 (AI-First)
+
+You are working on LaunchKit, a production-ready SaaS starter kit.
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router, Server Components, Server Actions)
+- **Language**: TypeScript 5.6 (strict mode — no `any`, no type assertions without justification)
+- **Database**: Neon Postgres (serverless) + Drizzle ORM ^0.36
+- **Auth**: Clerk (multi-tenant, orgs, webhooks)
+- **Billing**: Stripe only (Apple Pay, Google Pay, Link via Checkout)
+- **UI**: Tailwind CSS + shadcn/ui + Radix primitives
+- **AI**: Vercel AI SDK (openai, anthropic, google providers)
+- **Email**: React Email + Resend
+- **Repo**: Turborepo + pnpm workspaces
+
+## Monorepo Structure
+
+```
+apps/
+  web/                    ← Next.js application (main app)
+    app/                  ← Next.js App Router
+      api/ai/             ← AI API routes (chat, summarize, generate, images, documents, search)
+      api/billing/        ← Checkout + portal routes
+      api/webhooks/       ← Stripe + Clerk webhook handlers
+      dashboard/          ← Protected dashboard pages
+      settings/           ← User settings pages
+      auth/               ← Sign-in / sign-up pages
+    components/
+      ai/                 ← AI feature components (chat, etc.)
+      dashboard/          ← Header, sidebar
+      ui/                 ← shadcn/ui primitives (button, card, input, etc.)
+      shared/             ← Theme provider, theme toggle
+    lib/
+      credits.ts          ← getCredits, deductCredits, addCredits
+      rag.ts              ← chunkText, generateEmbedding, indexDocument, searchDocuments
+      stripe.ts           ← Stripe client (lazy-initialized)
+      utils.ts            ← cn() utility
+
+packages/
+  database/               ← Drizzle ORM schema, client, migrations
+    src/schema/           ← Table definitions (users, orgs, subscriptions, credits, ai-chats, documents)
+    drizzle.config.ts     ← Drizzle Kit config
+    src/seed.ts           ← Database seed script
+  config/                 ← Site and billing plan configuration
+    src/plans.ts          ← Plan definitions (free, pro, team) with Stripe + LS price IDs
+    src/site.ts           ← siteConfig object
+  email/                  ← React Email templates + Resend
+    src/templates/        ← welcome.tsx, team-invite.tsx
+    src/index.ts          ← sendEmail(), template exports
+  mcp-server/             ← MCP server for AI coding assistants
+    src/index.ts          ← All tool definitions and handlers
+    src/tasks/            ← send-welcome-email, send-team-invite, sync-billing-seats, etc.
+    src/index.ts          ← All job exports
+  tsconfig/               ← Shared TypeScript configs
+```
+
+## The 7 Golden Rules
+
+1. **Server Components by default.** Never add `"use client"` unless you need hooks (`useState`, `useEffect`, `useRef`), event handlers, or browser APIs (`window`, `localStorage`). Forms using Server Actions do NOT need `"use client"`.
+
+2. **Clerk for all auth.** Server: `import { auth } from "@clerk/nextjs/server"`. Client: `useUser()`, `useOrganization()`. Never roll custom auth.
+
+3. **Drizzle ORM for all DB.** Import from `@launchkit/database`. Use `db.query.*` for reads, `db.insert/update/delete` for writes. Never use raw SQL strings.
+
+4. **shadcn/ui for all UI.** Components are in `components/ui/`. Add new shadcn components with `npx shadcn@latest add [component]`. Always use `cn()` from `@/lib/utils`.
+
+5. **Zod for all validation.** Validate all API inputs, form inputs, and environment variables with Zod schemas.
+
+6. **Credits before AI.** Every AI operation must check `getCredits()` and call `deductCredits()`. CREDIT_COST constants: chat=1, summarize=2, generate=2, image=10, embedding=1.
+
+7. **No module-scope initialization.** Never call `new OpenAI()`, `new Stripe()`, or `neon()` at the top level. Always use lazy-init patterns (see patterns below).
+
+## File Naming Conventions
+
+| Type | Convention | Example |
+|------|-----------|---------|
+| Pages | `app/[route]/page.tsx` | `app/dashboard/reports/page.tsx` |
+| Layouts | `app/[route]/layout.tsx` | `app/dashboard/layout.tsx` |
+| Loading states | `app/[route]/loading.tsx` | `app/dashboard/loading.tsx` |
+| API routes | `app/api/[route]/route.ts` | `app/api/ai/chat/route.ts` |
+| Components | `components/[domain]/[name].tsx` | `components/dashboard/stats-card.tsx` |
+| Utilities | `lib/[name].ts` | `lib/credits.ts` |
+| Hooks | `hooks/use-[name].ts` | `hooks/use-credits.ts` |
+| Types | `types/[name].ts` | `types/billing.ts` |
+
+## Component Pattern
+
+```tsx
+// components/dashboard/stats-card.tsx
+import { cn } from "@/lib/utils";
+
+interface StatsCardProps {
+  title: string;
+  value: string | number;
+  description?: string;
+  className?: string;
+}
+
+export function StatsCard({ title, value, description, className }: StatsCardProps) {
+  return (
+    <div className={cn("rounded-lg border bg-card p-6", className)}>
+      <p className="text-sm text-muted-foreground">{title}</p>
+      <p className="text-3xl font-bold">{value}</p>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+    </div>
+  );
+}
+```
+
+## Page Pattern (Server Component)
+
+```tsx
+// app/dashboard/reports/page.tsx
+import type { Metadata } from "next";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { db } from "@launchkit/database";
+
+export const metadata: Metadata = {
+  title: "Reports",
+  description: "View your analytics and usage reports",
+};
+
+export default async function ReportsPage() {
+  const { userId, orgId } = await auth();
+  if (!userId) redirect("/auth/sign-in");
+
+  const data = await db.query.users.findFirst({ where: eq(users.id, userId) });
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
+      {/* Content */}
+    </div>
+  );
+}
+```
+
+## API Route Pattern
+
+```typescript
+// app/api/example/route.ts
+import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
+import { db } from "@launchkit/database";
+
+const Schema = z.object({
+  field: z.string().min(1),
+});
+
+export async function POST(req: Request) {
+  const { userId } = await auth();
+  if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+  const body = await req.json();
+  const parsed = Schema.safeParse(body);
+  if (!parsed.success) return Response.json({ error: parsed.error.flatten() }, { status: 422 });
+
+  try {
+    // business logic
+    return Response.json({ data: result });
+  } catch (error) {
+    console.error("[api/example/POST]", error);
+    return Response.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+```
+
+## AI API Route Pattern
+
+```typescript
+import { streamText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { auth } from "@clerk/nextjs/server";
+import { deductCredits, getCredits } from "@/lib/credits";
+
+const CREDIT_COST = 1;
+
+export async function POST(req: Request) {
+  const { userId, orgId } = await auth();
+  if (!userId) return new Response("Unauthorized", { status: 401 });
+
+  const balance = await getCredits(userId);
+  if (balance < CREDIT_COST) {
+    return Response.json({ error: "Insufficient credits" }, { status: 402 });
+  }
+
+  await deductCredits(userId, CREDIT_COST, "AI operation description");
+
+  const result = streamText({
+    model: openai("gpt-4o"),
+    messages,
+    onFinish: async ({ usage }) => {
+      if (orgId) await reportAIUsage(orgId, usage?.totalTokens ?? 1);
+    },
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+## Database Pattern
+
+```typescript
+// Reading data
+import { db } from "@launchkit/database";
+import { users, organizations } from "@launchkit/database";
+import { eq, and, desc } from "drizzle-orm";
+
+const user = await db.query.users.findFirst({
+  where: eq(users.clerkId, userId),
+  with: { memberships: true },
+});
+
+// Writing data
+await db.insert(documents).values({ organizationId, title, content });
+await db.update(users).set({ name }).where(eq(users.id, userId));
+await db.delete(documents).where(eq(documents.id, documentId));
+```
+
+## Adding a New Table
+
+1. Create `packages/database/src/schema/[table-name].ts`
+2. Export from `packages/database/src/schema/index.ts`
+3. Run `pnpm db:generate` to create migration
+4. Run `pnpm db:migrate` to apply it
+
+## Lazy-Init Patterns (Required for External Services)
+
+```typescript
+// ✅ Correct — lazy initialization
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
+
+// ✅ Also correct — Proxy pattern (used for db client)
+export const db = new Proxy({} as Database, {
+  get(_target, prop, receiver) {
+    const instance = getDb();
+    return Reflect.get(instance, prop, receiver);
+  },
+});
+
+// ❌ Wrong — module-scope initialization (breaks serverless cold starts)
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+```
+
+## Credit Costs Reference
+
+| Operation | Credits |
+|-----------|---------|
+| AI Chat (per request) | 1 |
+| Summarize | 2 |
+| Content Generation | 2 |
+| Image (DALL-E 3) | 10 |
+| Document Embedding (per chunk) | 1 |
+| Semantic Search | 1 |
+
+## Plan Limits Reference
+
+| Plan | Credits/month | Seats | Price |
+|------|--------------|-------|-------|
+| Free | 100 | 1 | $0 |
+| Pro | 5,000 | 5 | $29/mo |
+| Team | 25,000 | 25 | $79/mo |
+
+## Billing Adapter
+
+The billing provider is abstracted. To add billing logic:
+- Check `process.env.BILLING_PROVIDER` (default: `"stripe"`)
+- Use `packages/config/src/plans.ts` for plan definitions
+- Stripe webhooks: `app/api/webhooks/stripe/route.ts`
+- Always verify webhook signatures before processing
+
+
+## RAG / Document Search
+
+```typescript
+import { indexDocument, searchDocuments } from "@/lib/rag";
+
+// Index a document (background: use process-document-embedding job for large docs)
+await indexDocument(orgId, "Title", content, { metadata: { source: "upload" } });
+
+// Semantic search
+const results = await searchDocuments(orgId, "user query", 5);
+// results: Array<{ id, title, content, similarity, metadata, chunkIndex }>
+```
+
+## Testing
+
+- E2E tests with Playwright: `pnpm test:e2e` (from apps/web)
+- Test files live alongside pages or in a `__tests__` directory
+- Always use `@playwright/test` — not Jest for E2E
+
+## Common Pitfalls
+
+| Pitfall | Fix |
+|---------|-----|
+| `auth()` not called before DB query | Always call `auth()` first in server code |
+| Module-scope `new OpenAI()` | Use lazy-init with a getter function |
+| Using `any` type | Use `unknown` + type guards, or proper types |
+| Missing `"use client"` on interactive component | Add when using hooks/events |
+| Missing credit check before AI op | Always `getCredits()` + `deductCredits()` first |
+| SQL injection risk | Use Drizzle parameterized queries, never `sql\`...\`` with user input |
+| Hardcoded env var | Always use `process.env.VAR_NAME` |
+
+## Don't
+
+- Don't use `getServerSession` — use Clerk's `auth()` instead
+- Don't use Prisma — use Drizzle ORM
+- Don't create new UI primitives — use shadcn/ui components
+- Don't hardcode secrets — use environment variables from `.env.local`
+- Don't use `any` type — use strict TypeScript
+- Don't initialize clients at module scope — use lazy-init patterns
+- Don't skip auth checks in API routes
+- Don't skip credit checks before AI operations
+- Don't use CSS modules or styled-components — use Tailwind only
+- Don't bypass the billing abstraction — always use `BILLING_PROVIDER`

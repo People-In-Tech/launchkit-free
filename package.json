@@ -1,0 +1,35 @@
+{
+  "name": "launchkit",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "pnpm --filter @launchkit/marketing dev",
+    "dev:template": "pnpm --filter @launchkit/web dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "turbo db:migrate",
+    "db:push": "turbo db:push",
+    "db:studio": "turbo db:studio",
+    "db:seed": "turbo db:seed",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "clean": "turbo clean && rm -rf node_modules",
+    "video:studio": "pnpm --filter @launchkit/video studio",
+    "video:render": "pnpm --filter @launchkit/video render"
+  },
+  "devDependencies": {
+    "next": "15.5.14",
+    "prettier": "^3.8.0",
+    "turbo": "^2.9.6",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
+}

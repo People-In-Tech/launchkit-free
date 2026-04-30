@@ -1,0 +1,36 @@
+---
+description: LaunchKit core rules — always applied to all files
+globs: ["**/*.ts", "**/*.tsx", "**/*.mjs"]
+alwaysApply: true
+---
+
+# LaunchKit Core Rules
+
+## Architecture
+- This is a pnpm monorepo with Turborepo
+- Main app: `apps/web` (Next.js 15, App Router)
+- Database package: `packages/database` (Drizzle + Neon/pgvector)
+- Storage package: `packages/storage` (multi-provider)
+- Plugins package: `packages/plugins`
+- RAG package: `packages/rag` (pgvector embeddings)
+- Agents package: `packages/agents` (tool-calling framework)
+
+## Critical rules
+- Add `// @ts-nocheck` to any file that imports from `@launchkit/database` in the app
+- NEVER import DB packages in client components (`"use client"`)
+- ALWAYS check auth with `auth()` from `@clerk/nextjs/server` in API routes
+- Use `getModel(modelId)` from `@/lib/ai` for all AI calls — never instantiate providers directly
+- Add new public routes to `publicRoutes` in `apps/web/middleware.ts`
+
+## Components
+- Default to Server Components — only `"use client"` when you need hooks or browser APIs
+- Use `shadcn/ui` components from `@/components/ui/`
+- Icons: use `lucide-react` — never install icon packs
+- Styling: Tailwind CSS v3 — no inline styles
+
+## Code style
+- TypeScript everywhere — avoid `any`, use proper types
+- Named exports — no default export for components except pages
+- Use `cn()` from `@/lib/utils` for conditional class names
+- Use `toast.success()` / `toast.error()` from sonner for user feedback
+- API routes return `NextResponse.json({ data: ..., error: ... })`

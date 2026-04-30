@@ -1,0 +1,52 @@
+{
+  "name": "LaunchKit Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "forwardPorts": [3000, 3001, 5432],
+  "portsAttributes": {
+    "3000": { "label": "LaunchKit Web App", "onAutoForward": "openBrowser" },
+    "3001": { "label": "LaunchKit Docs" }
+  },
+
+  "postCreateCommand": "npm install -g pnpm@9 && pnpm install --no-frozen-lockfile && cp .env.example .env.local 2>/dev/null || true && echo '\\n✅ LaunchKit ready! Next steps:\\n  1. Fill in .env.local (Clerk, Stripe, Neon keys)\\n  2. Run: pnpm db:push\\n  3. Run: pnpm dev\\n'",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "prisma.prisma",
+        "mtxr.sqltools",
+        "ms-azuretools.vscode-docker",
+        "github.copilot",
+        "github.copilot-chat",
+        "antfu.iconify",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "streetsidesoftware.code-spell-checker"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "tailwindCSS.experimental.classRegex": [
+          ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+          ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ]
+      }
+    }
+  },
+
+  "remoteEnv": {
+    "NODE_ENV": "development"
+  }
+}

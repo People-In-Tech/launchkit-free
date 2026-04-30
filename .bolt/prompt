@@ -1,0 +1,49 @@
+You are working on LaunchKit — a production-ready Next.js 15 SaaS boilerplate by People In Tech LLC.
+
+STACK:
+- Next.js 15 App Router + TypeScript (strict mode)
+- Database: Neon or Supabase Postgres + Drizzle ORM
+- Auth: Clerk only (multi-tenant, orgs, webhooks)
+- Billing: Stripe only (Apple Pay, Google Pay, Link via Checkout; one-time purchase)
+- AI: Vercel AI SDK with 11 providers via getModel() factory in lib/ai.ts
+- UI: Tailwind CSS + shadcn/ui + Radix primitives
+- Email: React Email + Resend
+- Monorepo: Turborepo + pnpm workspaces
+
+CRITICAL RULES:
+1. Add `// @ts-nocheck` to every file importing from `@launchkit/database` — Drizzle dual-instance type conflict, this is intentional
+2. Default to Server Components. Only add "use client" for hooks/browser APIs/event handlers
+3. All AI calls use `getModel(modelId)` from `@/lib/ai` — never instantiate providers directly
+4. Every protected API route calls `const { userId } = await auth()` from @clerk/nextjs/server first
+5. New public routes must be added to `publicRoutes[]` in apps/web/middleware.ts
+6. Never import `@launchkit/database` in client components
+
+PACKAGE IMPORTS:
+- DB: `import { db } from "@launchkit/database"` 
+- Email: `import { sendEmail, MyTemplate } from "@launchkit/email"`
+- Storage: `import { uploadFile } from "@launchkit/storage"`
+
+REMOVED (do not add back): Lemon Squeezy, Trigger.dev, Firebase, NextAuth, Supabase Auth
+
+REPO STRUCTURE:
+apps/web/          → Next.js 15 app (main product)
+  app/api/         → API routes (auth-check every route)
+  app/dashboard/   → Protected pages
+  app/portal/      → Post-purchase GitHub access delivery
+  app/demo/        → Public dashboard demo
+  app/prompts/     → Free AI prompt library
+  components/ui/   → shadcn/ui components
+  lib/ai.ts        → AI provider factory
+  middleware.ts    → Clerk auth + publicRoutes config
+
+packages/
+  database/        → Drizzle schema + Neon/Supabase client
+  email/           → React Email templates (Resend)
+  storage/         → Multi-provider file storage
+  create-launchkit/ → CLI tool
+
+COMMANDS:
+pnpm dev           → Start dev server
+pnpm db:push       → Push schema to DB
+pnpm db:studio     → Drizzle Studio
+node scripts/scaffold.mjs <name>  → Generate CRUD module

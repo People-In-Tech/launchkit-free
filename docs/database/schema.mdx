@@ -1,0 +1,106 @@
+---
+title: Schema Reference
+description: Full Drizzle schema reference for every table in LaunchKit.
+---
+
+## Overview
+
+LaunchKit's database schema lives in `packages/database/src/schema/`. All tables use Drizzle ORM with Neon serverless Postgres.
+
+## Core Tables
+
+### `users`
+
+Synced from Clerk via webhook. You rarely write to this directly — Clerk is the source of truth for identity.
+
+```ts
+// packages/database/src/schema/users.ts
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),           // Clerk user ID
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  avatarUrl: text("avatar_url"),
+  role: text("role").default("user"),    // "user" | "super_admin"
+  stripeCustomerId: text("stripe_customer_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+```
+
+### `subscriptions`
+
+Tracks Stripe purchases and subscription state. Written by the Stripe webhook handler.
+
+```ts
+// packages/database/src/schema/subscriptions.ts
+export const subscriptions = pgTable("subscriptions", {
+  id: text("id").primaryKey(),              // Stripe subscription/payment intent ID
+  userId: text("user_id").references(() => users.id),
+  plan: text("plan").notNull(),             // "solo" | "teams"
+  status: text("status").notNull(),         // "active" | "canceled" | "past_due"
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  stripePriceId: text("stripe_price_id"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+```
+
+### `organizations`
+
+Only relevant if you're on Teams plan. Synced from Clerk Organizations.
+
+```ts
+// packages/database/src/schema/organizations.ts
+export const organizations = pgTable("organizations", {
+  id: text("id").primaryKey(),             // Clerk org ID
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  ownerId: text("owner_id").references(() => users.id),
+  plan: text("plan").default("teams"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+```
+
+## Adding a Table
+
+```ts
+// 1. Create packages/database/src/schema/your-table.ts
+export const yourTable = pgTable("your_table", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// 2. Export from packages/database/src/schema/index.ts
+export * from "./your-table";
+
+// 3. Push to Neon
+pnpm db:push
+```
+
+## Migrations
+
+LaunchKit uses `drizzle-kit push` in development (no migration files). For production, generate a migration:
+
+```bash
+pnpm db:generate  # generates migration SQL
+pnpm db:migrate   # applies to Neon
+```
+
+## Indexes
+
+Add indexes for any column you filter on frequently:
+
+```ts
+import { index } from "drizzle-orm/pg-core";
+
+export const yourTable = pgTable("your_table", {
+  userId: text("user_id").references(() => users.id).notNull(),
+  status: text("status").notNull(),
+}, (table) => ({
+  userIdIdx: index("your_table_user_id_idx").on(table.userId),
+  statusIdx: index("your_table_status_idx").on(table.status),
+}));
+```

@@ -1,0 +1,89 @@
+{
+  "$schema": "https://v2-9-6.turborepo.dev/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "NODE_ENV",
+    "SKIP_ENV_VALIDATION",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_URL",
+    "CI"
+  ],
+  "tasks": {
+    "docs": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "DATABASE_URL",
+        "DIRECT_URL",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "CLERK_WEBHOOK_SECRET",
+        "STRIPE_SECRET_KEY",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "STRIPE_PRICE_LAUNCHKIT_PRO",
+        "STRIPE_PRICE_LAUNCHKIT_TEAM",
+        "RESEND_API_KEY",
+        "EMAIL_FROM",
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "GOOGLE_GENERATIVE_AI_API_KEY",
+        "PERPLEXITY_API_KEY",
+        "XAI_API_KEY",
+        "DEEPSEEK_API_KEY",
+        "GROQ_API_KEY",
+        "MISTRAL_API_KEY",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_REGION",
+        "GOOGLE_VERTEX_PROJECT",
+        "GOOGLE_VERTEX_LOCATION",
+        "AZURE_OPENAI_API_KEY",
+        "AZURE_OPENAI_ENDPOINT",
+        "STORAGE_PROVIDER",
+        "BLOB_READ_WRITE_TOKEN",
+        "S3_BUCKET",
+        "S3_REGION",
+        "GCS_BUCKET",
+        "AZURE_STORAGE_CONNECTION_STRING",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_KEY",
+        "LAUNCHKIT_GITHUB_TOKEN",
+        "LAUNCHKIT_PRIVATE_REPO_SLUG",
+        "NEXT_PUBLIC_POSTHOG_KEY",
+        "NEXT_PUBLIC_POSTHOG_HOST",
+        "POSTHOG_API_KEY",
+        "LEMONSQUEEZY_API_KEY",
+        "LEMONSQUEEZY_STORE_ID",
+        "LEMONSQUEEZY_WEBHOOK_SECRET",
+        "NEXT_PUBLIC_*"
+      ]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:generate": { "cache": false },
+    "db:migrate": { "cache": false },
+    "db:push": { "cache": false },
+    "db:studio": { "cache": false, "persistent": true },
+    "db:seed": { "cache": false },
+    "clean": { "cache": false },
+    "deploy": { "cache": false },
+    "start": { "cache": false },
+    "render": {
+      "cache": false,
+      "outputs": ["../../apps/web/public/launchkit-demo.mp4"]
+    },
+    "studio": { "cache": false, "persistent": true }
+  }
+}

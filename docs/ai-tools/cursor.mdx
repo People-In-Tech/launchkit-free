@@ -1,0 +1,106 @@
+---
+title: Cursor
+description: Using Cursor IDE with LaunchKit — the .cursorrules file and best prompts.
+---
+
+# Cursor
+
+LaunchKit is pre-optimized for [Cursor](https://cursor.sh). The `.cursorrules` file at the repo root is loaded automatically by Cursor whenever you open the project.
+
+---
+
+## `.cursorrules`
+
+This file tells Cursor:
+- Your tech stack and versions
+- The monorepo structure and package conventions
+- Naming conventions and import patterns
+- What Cursor should never generate (raw SQL, `any` types, custom CSS)
+
+You don't need to do anything — Cursor reads it automatically.
+
+---
+
+## Best Prompts for LaunchKit
+
+**Cmd+K (inline edit) tips:**
+
+```
+# Add auth check to this Server Component
+const { userId } = await auth();
+if (!userId) redirect("/auth/sign-in");
+
+# Add Zod validation to this Route Handler
+const body = RequestBodySchema.parse(await req.json());
+
+# Insert into the DB using the existing pattern
+const [result] = await db.insert(myTable).values({...}).returning();
+```
+
+**Cursor Chat (Cmd+L) tips:**
+
+```
+# Building a new feature
+Look at how apps/web/app/settings/billing/page.tsx works.
+Now create a similar page for [feature] at apps/web/app/settings/[slug]/page.tsx.
+
+# Debugging
+Here's the error: [paste error]
+The relevant files are:
+- [file 1]
+- [file 2]
+What's wrong?
+
+# Adding types
+Add TypeScript types for the new [thing].
+Follow the patterns in packages/database/src/types.ts.
+```
+
+---
+
+## Cursor Rules for Your Own Codebase
+
+As you build out your SaaS, update `.cursorrules` to cover your custom conventions:
+
+```markdown
+## My App Conventions
+
+### Data fetching
+Always fetch data in Server Components. Pass it as props to Client Components.
+Never use useEffect for data fetching.
+
+### Form submissions
+Always use Server Actions (not Route Handlers) for form mutations.
+Validate with Zod before any DB write.
+
+### Error handling
+Always return { error: string } | { data: T } from Server Actions.
+Never throw from a Server Action — catch and return the error instead.
+```
+
+---
+
+## Tab Completions
+
+Cursor's tab completion learns from your code. After a few days of use, it will start suggesting:
+
+- The correct Drizzle query patterns for your schema
+- Your custom component names and props
+- Your Server Action patterns
+
+No setup needed — it learns automatically.
+
+---
+
+## Context Tips
+
+<Tip>
+  Add frequently-referenced files to **Cursor's context** (`@file`) so they're always available:
+  - `@AGENTS.md` — architecture overview
+  - `@packages/database/src/schema/index.ts` — all tables
+  - `@.env.example` — all env vars
+</Tip>
+
+<Tip>
+  Use `@codebase` in Cursor Chat for cross-file questions: *"@codebase How does the billing webhook handle subscription updates?"*
+</Tip>

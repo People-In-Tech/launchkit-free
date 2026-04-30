@@ -1,0 +1,74 @@
+---
+title: Feedback Widget
+description: Drop-in user feedback widget for LaunchKit. Captures bug reports, feature requests, and NPS scores.
+---
+
+## Overview
+
+The Feedback plugin adds a floating feedback button to your app. Submissions go to Postgres and optionally fire a Resend notification to your team.
+
+## Installation
+
+```bash
+# Already included in LaunchKit Pro
+# Enable in your app config:
+```
+
+```ts
+// apps/web/app/layout.tsx
+import { FeedbackWidget } from "@launchkit/plugins/feedback";
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <FeedbackWidget />
+      </body>
+    </html>
+  );
+}
+```
+
+## Schema
+
+The plugin adds one table:
+
+```ts
+export const feedback = pgTable("feedback", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").references(() => users.id),
+  type: text("type").notNull(),     // "bug" | "feature" | "other"
+  message: text("message").notNull(),
+  url: text("url"),                 // page where feedback was submitted
+  userAgent: text("user_agent"),
+  screenshot: text("screenshot"),  // base64 or Vercel Blob URL
+  status: text("status").default("open"),  // "open" | "resolved"
+  createdAt: timestamp("created_at").defaultNow(),
+});
+```
+
+Run `pnpm db:push` after adding this schema.
+
+## Admin View
+
+Feedback submissions appear in the admin dashboard at `/admin/feedback`. Filter by type and status, mark resolved, and add internal notes.
+
+## Email Notifications
+
+Set `FEEDBACK_NOTIFY_EMAIL` in your env to receive a Resend email for each new submission:
+
+```bash
+FEEDBACK_NOTIFY_EMAIL=hello@yourstartup.com
+```
+
+## Configuration
+
+```ts
+<FeedbackWidget
+  position="bottom-right"       // "bottom-right" | "bottom-left"
+  types={["bug", "feature"]}    // which feedback types to show
+  showScreenshot={true}         // screenshot attachment option
+  theme="dark"                  // "light" | "dark" | "system"
+/>
+```

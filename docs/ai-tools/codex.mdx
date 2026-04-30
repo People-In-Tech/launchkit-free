@@ -1,0 +1,64 @@
+---
+title: OpenAI Codex
+description: Using OpenAI Codex CLI with LaunchKit — agentic coding in your terminal.
+---
+
+## Overview
+
+[OpenAI Codex CLI](https://github.com/openai/codex) is a terminal-based AI agent that can read, write, and run code across your entire repo. It works well with LaunchKit because the monorepo structure is explicit and predictable.
+
+## Setup
+
+```bash
+npm install -g @openai/codex
+codex login
+```
+
+Point Codex at the repo root:
+
+```bash
+cd launchkit/
+codex
+```
+
+Codex reads `AGENTS.md` at the repo root for project conventions — this file is pre-configured in LaunchKit.
+
+## What `AGENTS.md` Covers
+
+- Monorepo commands (`pnpm dev`, `pnpm build`, `pnpm typecheck`)
+- Where packages live and what they export
+- Drizzle migration workflow
+- Clerk + Stripe integration points
+
+## Effective Tasks
+
+Codex handles end-to-end feature work well:
+
+```
+Add a waitlist feature: a landing page form, a database table, and an admin page to view signups
+```
+
+```
+Write Playwright tests for the checkout flow using the existing BDD feature file as a guide
+```
+
+```
+Refactor the AI provider factory to support streaming responses
+```
+
+## Approval Mode
+
+Run with `--approval-mode suggest` if you want to review all file changes before they're written:
+
+```bash
+codex --approval-mode suggest
+```
+
+The default `auto` mode is faster for trusted operations like adding a new page or API route.
+
+## Sandbox Mode
+
+Codex can spin up a sandbox to run tests before writing to disk. Useful for:
+- Schema migrations (`pnpm db:push`)
+- Build verification (`pnpm build`)
+- Running BDD tests (`pnpm test:bdd:smoke`)

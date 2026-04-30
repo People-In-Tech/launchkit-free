@@ -1,0 +1,97 @@
+---
+title: Environment Setup
+description: "Configure all required environment variables"
+---
+
+## Quick Setup
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+## Required Variables
+
+### Authentication (Clerk)
+
+Get these from your [Clerk Dashboard](https://dashboard.clerk.com):
+
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+CLERK_WEBHOOK_SECRET=whsec_...  # from Clerk webhooks dashboard
+```
+
+**Clerk webhook setup:**
+1. Go to Clerk Dashboard → Webhooks
+2. Add endpoint: `https://yourdomain.com/api/webhooks/clerk`
+3. Subscribe to: `user.created`, `user.updated`, `organization.created`, `organizationMembership.created`
+
+### Database (Neon)
+
+Get your connection string from the [Neon Console](https://console.neon.tech):
+
+```bash
+DATABASE_URL=postgresql://neondb_owner:password@ep-xxx-pooler.aws.neon.tech/neondb?sslmode=require
+```
+
+<Tip>
+  Use the **pooled** connection string (includes `-pooler` in the hostname) for production. It handles serverless connection scaling automatically.
+</Tip>
+
+### Billing (Stripe)
+
+Get these from your [Stripe Dashboard](https://dashboard.stripe.com):
+
+```bash
+STRIPE_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...  # from Stripe webhooks dashboard
+
+# Price IDs — create these in Stripe Dashboard → Products
+STRIPE_SOLO_PRICE_ID=price_...   # $149 one-time
+STRIPE_TEAMS_PRICE_ID=price_...  # $299 one-time
+```
+
+**Stripe webhook setup:**
+1. Go to Stripe Dashboard → Developers → Webhooks
+2. Add endpoint: `https://yourdomain.com/api/webhooks/stripe`
+3. Subscribe to: `checkout.session.completed`, `checkout.session.expired`, `payment_intent.payment_failed`
+
+### Email (Resend)
+
+Get your API key from [Resend](https://resend.com):
+
+```bash
+RESEND_API_KEY=re_...
+EMAIL_FROM=YourApp <hello@yourdomain.com>
+```
+
+### AI Providers
+
+```bash
+OPENAI_API_KEY=sk-...              # Required — used for default model + embeddings
+ANTHROPIC_API_KEY=sk-ant-...       # Optional
+GOOGLE_GENERATIVE_AI_API_KEY=...   # Optional — for Gemini models
+PERPLEXITY_API_KEY=pplx-...        # Optional
+XAI_API_KEY=...                    # Optional — Grok
+GROQ_API_KEY=gsk_...               # Optional
+```
+
+### Application
+
+```bash
+NEXT_PUBLIC_APP_URL=https://yourdomain.com
+LAUNCHKIT_GITHUB_TOKEN=ghp_...     # For pro template access (after purchase)
+LAUNCHKIT_PRIVATE_REPO_SLUG=People-In-Tech/launchkit-pro
+```
+
+## Validate Your Setup
+
+After filling in `.env.local`, run:
+
+```bash
+pnpm db:push      # Should connect and push schema successfully
+pnpm dev          # Should start without credential errors
+```

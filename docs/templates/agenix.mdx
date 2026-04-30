@@ -1,0 +1,66 @@
+---
+title: Agenix — AI Agent SaaS Template
+description: An AI agent platform starter. Let users build, deploy, and run custom AI agents.
+---
+
+<Warning>
+  Pro tier only. Included in the **Teams** plan or available as a standalone add-on.
+</Warning>
+
+## Overview
+
+Agenix is an AI agent SaaS template — users create agents with custom system prompts, tools, and knowledge bases, then run them via API or chat UI. Think a self-hosted version of OpenAI's GPT Builder.
+
+## What's Included
+
+- **Agent builder** — UI for creating agents with system prompts, temperature, and tool selection
+- **Tool marketplace** — pre-built tools (web search, code execution, database queries)
+- **Knowledge bases** — file upload → chunking → pgvector storage → RAG retrieval
+- **Chat UI** — streaming chat interface per agent
+- **API keys** — users generate API keys to call their agents programmatically
+- **Usage metering** — track tokens per agent per user, enforce plan limits
+- **Streaming** — real-time token streaming via Vercel AI SDK
+
+## Database Schema
+
+```ts
+agents, agentTools, knowledgeBases, documents, embeddings, apiKeys, usageLogs
+```
+
+## Getting Started
+
+```bash
+npx create-launchkit@latest my-agent-platform --template agenix
+```
+
+## Required Environment Variables
+
+```bash
+OPENAI_API_KEY=sk-...           # For embeddings (text-embedding-3-small)
+DEFAULT_AI_MODEL=gpt-4o         # Default model for new agents
+E2B_API_KEY=...                 # Optional: for code execution sandbox
+SERPER_API_KEY=...              # Optional: for web search tool
+```
+
+## Architecture
+
+```
+User → Create Agent → Configure tools + knowledge base
+User → Start chat → API route → AI SDK streamText → Tool calls → Response stream
+```
+
+Agents are stored in Postgres. Knowledge base documents are chunked, embedded, and stored in pgvector. Each chat turn does semantic retrieval before generating.
+
+## Key Files
+
+| Path | Description |
+|------|-------------|
+| `apps/web/app/(app)/agents/` | Agent builder + list |
+| `apps/web/app/(app)/agents/[id]/chat/` | Agent chat UI |
+| `apps/web/app/api/agents/[id]/stream/` | Streaming API route |
+| `packages/database/src/schema/agents.ts` | Agent schema |
+| `packages/ai/src/tools/` | Built-in agent tools |
+
+## Extending with Custom Tools
+
+Add a tool in `packages/ai/src/tools/your-tool.ts` and register it in the agent builder's tool picker. Users can enable it per-agent.

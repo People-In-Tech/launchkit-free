@@ -1,0 +1,15 @@
+---
+name: LaunchKit — Dev Setup
+description: First-time environment setup for LaunchKit
+tags: [launchkit, setup, onboarding]
+author: people-in-tech
+---
+steps:
+  - name: Install dependencies
+    command: pnpm install
+  - name: Copy env file
+    command: cp .env.example .env.local
+  - name: Push database schema
+    command: pnpm db:push
+  - name: Start dev server
+    command: pnpm dev

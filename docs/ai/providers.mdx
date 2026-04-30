@@ -1,0 +1,79 @@
+---
+title: AI Providers
+description: Swap AI providers without changing your app code — OpenAI, Anthropic, Gemini, and more.
+---
+
+## Overview
+
+LaunchKit's AI module (`packages/ai/`) wraps the [Vercel AI SDK](https://sdk.vercel.ai/) with a provider factory. You set one environment variable to switch models across your entire app.
+
+## Supported Providers
+
+| Provider | Models | Env Var |
+|----------|--------|---------|
+| OpenAI | gpt-4o, gpt-4o-mini, o1, o3 | `OPENAI_API_KEY` |
+| Anthropic | claude-opus-4, claude-sonnet-4 | `ANTHROPIC_API_KEY` |
+| Google Gemini | gemini-3.1-pro, gemini-3.1-flash | `GOOGLE_GENERATIVE_AI_API_KEY` |
+| Groq | llama-3.3-70b, mixtral-8x7b | `GROQ_API_KEY` |
+| Mistral | mistral-large, mistral-medium | `MISTRAL_API_KEY` |
+
+## Usage
+
+```ts
+import { getModel } from "@launchkit/ai";
+
+// Uses DEFAULT_AI_MODEL env var
+const model = getModel();
+
+// Explicit model
+const model = getModel("claude-sonnet-4");
+
+// Stream a response
+const { textStream } = await streamText({
+  model,
+  prompt: "Summarize this document",
+});
+```
+
+## Configuration
+
+```bash
+# .env.local
+DEFAULT_AI_MODEL=gpt-4o-mini   # default model for the app
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+You only need the API key for the provider you're using.
+
+## Per-Route Overrides
+
+Override the model at the route level for different cost/quality tradeoffs:
+
+```ts
+// app/api/chat/route.ts
+export async function POST(req: Request) {
+  const model = getModel("gpt-4o-mini");  // cheap model for chat
+
+  const { textStream } = await streamText({ model, ... });
+}
+
+// app/api/analysis/route.ts
+export async function POST(req: Request) {
+  const model = getModel("claude-opus-4");  // powerful model for analysis
+}
+```
+
+## Adding a New Provider
+
+Install the Vercel AI SDK provider package and add it to `packages/ai/src/factory.ts`:
+
+```ts
+import { createCohere } from "@ai-sdk/cohere";
+
+const cohere = createCohere({ apiKey: process.env.COHERE_API_KEY });
+
+// Add to the switch statement in getModel()
+case "command-r-plus":
+  return cohere("command-r-plus");
+```

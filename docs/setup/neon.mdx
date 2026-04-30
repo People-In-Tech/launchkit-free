@@ -1,0 +1,116 @@
+---
+title: Neon (Database)
+description: Set up a serverless Postgres database on Neon in 2 minutes.
+---
+
+# Neon — Database
+
+<Info>**Setup time: ~2 minutes** — Create a project, copy a connection string, done.</Info>
+
+LaunchKit uses [Neon](https://neon.tech) for serverless Postgres. It has a generous free tier, instant provisioning, and pgvector support for AI features.
+
+<Steps>
+
+### Create a Neon account
+
+Go to [neon.tech](https://neon.tech) and sign up. Free tier is plenty for development and early production.
+
+### Create a project
+
+1. Click **New Project**
+2. Give it a name (e.g. `my-app`)
+3. Choose a region close to your users (US West is a good default)
+4. Click **Create Project**
+
+### Copy your connection string
+
+On the project dashboard, click **Connect** → select **Node.js** → copy the **connection string** that looks like this:
+
+```
+postgresql://neondb_owner:xxxxx@ep-xxx.us-west-2.aws.neon.tech/neondb?sslmode=require
+```
+
+### Add to `.env.local`
+
+```env
+DATABASE_URL=postgresql://neondb_owner:xxxxx@ep-xxx.us-west-2.aws.neon.tech/neondb?sslmode=require
+```
+
+<Warning>
+  Always include `?sslmode=require` at the end. Neon rejects connections without SSL.
+</Warning>
+
+### Enable pgvector (optional — for AI features)
+
+If you plan to use vector search or RAG:
+
+1. Go to your Neon project → **Extensions**
+2. Enable **pgvector**
+
+Or run this SQL in the Neon SQL editor:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+</Steps>
+
+---
+
+## Push the Schema
+
+Once your `DATABASE_URL` is set, apply the Drizzle schema:
+
+```bash
+pnpm db:push
+```
+
+This creates all the tables defined in `packages/database/src/schema/`.
+
+**Browse your database visually:**
+
+```bash
+pnpm db:studio
+```
+
+Opens Drizzle Studio at `https://local.drizzle.studio` — a full database browser in your browser.
+
+---
+
+## Branching (Pro tip)
+
+Neon supports database branching — create a snapshot of your database per pull request:
+
+```bash
+# Create a branch for a feature
+neonctl branch create --name feature/my-feature
+
+# Get the connection string for that branch
+neonctl connection-string feature/my-feature
+```
+
+This means you can test schema migrations on a branch database before merging to production.
+
+---
+
+## Environment Variables
+
+```env
+# Required
+DATABASE_URL=postgresql://user:password@ep-xxx.us-west-2.aws.neon.tech/neondb?sslmode=require
+```
+
+That's it — Neon only needs one env var.
+
+---
+
+## What's Next
+
+<CardGroup cols={2}>
+  <Card title="Clerk setup →" icon="lock" href="/setup/clerk">
+    Set up auth. Takes ~3 minutes.
+  </Card>
+  <Card title="Database reference →" icon="database" href="/build/database">
+    Learn how Drizzle queries work in LaunchKit.
+  </Card>
+</CardGroup>

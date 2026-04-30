@@ -1,0 +1,76 @@
+---
+title: First Deploy
+description: "Deploy LaunchKit to Vercel in minutes"
+---
+
+## Deploy to Vercel
+
+### Option A — Vercel CLI
+
+```bash
+npm i -g vercel
+vercel deploy --prod
+```
+
+Follow the prompts to create a new project and set your team.
+
+### Option B — Git Integration
+
+1. Push your repo to GitHub
+2. Go to [vercel.com/new](https://vercel.com/new)
+3. Import your repository
+4. Set the **Root Directory** to `apps/web`
+5. Add all environment variables from `.env.local`
+6. Click **Deploy**
+
+<Warning>
+  Vercel needs to know the root directory is `apps/web` since LaunchKit is a monorepo. Without this, the build will fail.
+</Warning>
+
+## Required Vercel Environment Variables
+
+Add all of these in **Vercel Dashboard → Settings → Environment Variables**:
+
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+CLERK_SECRET_KEY
+CLERK_WEBHOOK_SECRET
+DATABASE_URL
+STRIPE_SECRET_KEY
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+STRIPE_WEBHOOK_SECRET
+STRIPE_SOLO_PRICE_ID
+STRIPE_TEAMS_PRICE_ID
+RESEND_API_KEY
+EMAIL_FROM
+OPENAI_API_KEY
+NEXT_PUBLIC_APP_URL        ← set to your Vercel URL or custom domain
+LAUNCHKIT_GITHUB_TOKEN     ← required for pro template access
+LAUNCHKIT_PRIVATE_REPO_SLUG=People-In-Tech/launchkit-pro
+```
+
+## Post-Deploy Checklist
+
+<Steps>
+  <Step title="Update webhook URLs">
+    Update your Stripe and Clerk webhook endpoints from `localhost:3000` to your production URL.
+  </Step>
+  <Step title="Verify database connection">
+    Visit `/api/health` (if implemented) or check your Neon console for connections.
+  </Step>
+  <Step title="Test checkout flow">
+    Make a test purchase using Stripe's test card `4242 4242 4242 4242`.
+  </Step>
+  <Step title="Set up custom domain">
+    Add your domain in Vercel Dashboard → Domains, then update `NEXT_PUBLIC_APP_URL`.
+  </Step>
+</Steps>
+
+## Automatic Deployments
+
+Once you've connected GitHub to Vercel, every push to `main` triggers a production deployment. PRs get preview deployments automatically.
+
+```bash
+git add -A && git commit -m "feat: your feature"
+git push origin main   # → triggers Vercel deploy
+```

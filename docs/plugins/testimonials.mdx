@@ -1,0 +1,66 @@
+---
+title: Testimonials
+description: Social proof module for LaunchKit. Collect, manage, and display customer testimonials on your landing page.
+---
+
+## Overview
+
+The Testimonials plugin adds a collection flow + admin management for social proof. Works well with the landing page hero section.
+
+## Usage
+
+Drop the testimonials component anywhere:
+
+```tsx
+import { TestimonialsGrid } from "@launchkit/plugins/testimonials";
+
+// On your landing page
+<TestimonialsGrid limit={6} featured={true} />
+```
+
+## Schema
+
+```ts
+export const testimonials = pgTable("testimonials", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  authorName: text("author_name").notNull(),
+  authorTitle: text("author_title"),         // "CTO at Acme"
+  authorAvatarUrl: text("author_avatar_url"),
+  authorUrl: text("author_url"),             // Twitter/LinkedIn link
+  content: text("content").notNull(),
+  rating: integer("rating"),                 // 1-5 stars
+  featured: boolean("featured").default(false),
+  approved: boolean("approved").default(false),
+  source: text("source"),                    // "twitter" | "email" | "form"
+  createdAt: timestamp("created_at").defaultNow(),
+});
+```
+
+## Collecting Testimonials
+
+**Option 1 — Form**: Embed the testimonial submission form:
+
+```tsx
+import { TestimonialForm } from "@launchkit/plugins/testimonials";
+
+<TestimonialForm onSuccess={() => toast("Thanks for your review!")} />
+```
+
+**Option 2 — Twitter import**: Import testimonials from Twitter mentions via the admin panel at `/admin/testimonials`.
+
+**Option 3 — Manual**: Add testimonials directly in the admin panel.
+
+## Approval Flow
+
+New testimonials land in `/admin/testimonials` with `approved: false`. Click **Approve** to make them visible. Toggle `featured` to include them in the featured carousel.
+
+## Display Components
+
+| Component | Description |
+|-----------|-------------|
+| `<TestimonialsGrid />` | Masonry grid layout |
+| `<TestimonialsCarousel />` | Auto-scrolling carousel |
+| `<TestimonialCard />` | Single testimonial card |
+| `<StarRating />` | 5-star rating display |
+
+All components support `dark` and `light` modes automatically.

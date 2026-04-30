@@ -1,0 +1,144 @@
+---
+title: Deploy to Vercel
+description: Go from local to production in two minutes.
+---
+
+# Deploy to Vercel
+
+<Steps>
+
+### Import your GitHub repo
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Click **Import Git Repository**
+3. Select your LaunchKit repo
+4. Leave all build settings as-is — Vercel auto-detects the Next.js monorepo setup
+
+### Add environment variables
+
+In the Vercel import UI, go to **Environment Variables** and add all your production values.
+
+<Tip>
+  Copy your `.env.local`, remove any localhost URLs, and paste each key-value into Vercel. Or use Vercel's bulk import — paste the whole file and it parses it automatically.
+</Tip>
+
+Make sure to update these for production:
+
+```env
+# Change from localhost to your real domain
+NEXT_PUBLIC_APP_URL=https://yourdomain.com
+
+# Use live Stripe keys (not test)
+STRIPE_SECRET_KEY=sk_live_xxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxx
+
+# Use live Clerk keys
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxx
+CLERK_SECRET_KEY=sk_live_xxx
+```
+
+### Deploy
+
+Click **Deploy**. Vercel builds the project and gives you a preview URL.
+
+### Add your production webhook URLs
+
+After deploying, update webhook endpoints to use your real URL:
+
+**Stripe:** Dashboard → Webhooks → your endpoint → update URL to `https://yourdomain.com/api/webhooks/stripe`
+
+**Clerk:** Dashboard → Webhooks → your endpoint → update URL to `https://yourdomain.com/api/webhooks/clerk`
+
+Copy the new signing secrets and update them in Vercel → Environment Variables.
+
+### Add a custom domain
+
+Go to your Vercel project → **Settings → Domains** → add your domain. See the [custom domain guide →](/deploy/custom-domain)
+
+</Steps>
+
+---
+
+## Subsequent Deploys
+
+Every push to `main` triggers an automatic Vercel deployment. Pull requests get preview deployments automatically.
+
+```bash
+git push origin main   # → triggers production deploy
+```
+
+---
+
+## Monorepo Config
+
+Vercel's build settings for the monorepo are pre-configured in `apps/web/vercel.json`. No changes needed.
+
+If you ever need to override:
+
+| Setting | Value |
+|---|---|
+| Framework preset | Next.js |
+| Root directory | `apps/web` |
+| Build command | `cd ../.. && pnpm build --filter=web` |
+| Output directory | `.next` |
+| Install command | `pnpm install` |
+
+---
+
+## Environment Variable Checklist
+
+Before going live, verify these are all set in Vercel:
+
+<AccordionGroup>
+  <Accordion title="Required for auth">
+    ```env
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxx
+    CLERK_SECRET_KEY=sk_live_xxx
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL=/auth/sign-in
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL=/auth/sign-up
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/portal
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/portal
+    CLERK_WEBHOOK_SECRET=whsec_xxx
+    ```
+  </Accordion>
+
+  <Accordion title="Required for payments">
+    ```env
+    BILLING_PROVIDER=stripe
+    STRIPE_SECRET_KEY=sk_live_xxx
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxx
+    STRIPE_WEBHOOK_SECRET=whsec_xxx
+    STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
+    STRIPE_PRO_YEARLY_PRICE_ID=price_xxx
+    STRIPE_TEAM_MONTHLY_PRICE_ID=price_xxx
+    STRIPE_TEAM_YEARLY_PRICE_ID=price_xxx
+    ```
+  </Accordion>
+
+  <Accordion title="Required for database">
+    ```env
+    DATABASE_URL=postgresql://...neon.tech/neondb?sslmode=require
+    ```
+  </Accordion>
+
+  <Accordion title="Required for email">
+    ```env
+    RESEND_API_KEY=re_xxx
+    EMAIL_FROM=YourApp <hello@yourdomain.com>
+    ```
+  </Accordion>
+
+  <Accordion title="Required for app URL">
+    ```env
+    NEXT_PUBLIC_APP_URL=https://yourdomain.com
+    NEXT_PUBLIC_APP_NAME=YourApp
+    ```
+  </Accordion>
+
+  <Accordion title="Recommended for analytics">
+    ```env
+    NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+    NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+    ```
+  </Accordion>
+</AccordionGroup>

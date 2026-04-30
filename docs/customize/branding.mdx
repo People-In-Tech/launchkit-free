@@ -1,0 +1,115 @@
+---
+title: Branding & Copy
+description: Change the app name, logo, tagline, and all marketing copy in 3 files.
+---
+
+# Branding & Copy
+
+Most of your branding lives in three files. Change those and you're done.
+
+---
+
+## 1. Site Config
+
+`packages/config/src/site.ts` is the single source of truth for your brand:
+
+```typescript
+export const siteConfig = {
+  name: "YourApp",                              // ← App name
+  description: "What your app does in one line.", // ← Meta description
+  url: "https://yourdomain.com",
+  ogImage: "https://yourdomain.com/og.jpg",      // ← Open Graph image
+  links: {
+    twitter: "https://twitter.com/yourhandle",
+    github: "https://github.com/yourorg/yourapp",
+  },
+};
+```
+
+`siteConfig.name` is used throughout the app — in the nav, email templates, page titles, and footer.
+
+---
+
+## 2. Landing Page Copy
+
+The marketing landing page is `apps/web/app/page.tsx`. Find and replace:
+
+```tsx
+// Headline (around line 30)
+<h1>Ship your SaaS in a weekend — not a quarter.</h1>
+
+// Subheadline
+<p>LaunchKit gives you everything you need to...</p>
+
+// CTA buttons
+<Button>Get Started</Button>
+<Button variant="outline">View Demo</Button>
+```
+
+<Tip>
+  Give this to Claude: *"Rewrite the headline, subheadline, and feature descriptions in apps/web/app/page.tsx for a [your niche] SaaS product. Keep the same JSX structure."*
+</Tip>
+
+---
+
+## 3. Logo
+
+The logo is defined in `apps/web/components/shared/logo.tsx` (and referenced in the auth layout and navbar).
+
+**Option A — Replace with an image:**
+
+```tsx
+import Image from "next/image";
+
+export function Logo() {
+  return <Image src="/logo.svg" alt="YourApp" width={32} height={32} />;
+}
+```
+
+Put your logo file in `apps/web/public/logo.svg`.
+
+**Option B — Use an icon from lucide-react:**
+
+```tsx
+import { Zap } from "lucide-react";
+
+export function Logo() {
+  return (
+    <div className="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+      <Zap className="h-4 w-4 text-white" />
+    </div>
+  );
+}
+```
+
+---
+
+## Favicon
+
+Replace `apps/web/public/favicon.ico` (and `favicon.svg` if present) with your own.
+
+For a quick favicon from a letter or emoji, use [favicon.io](https://favicon.io).
+
+---
+
+## OG Image
+
+The default OG image is referenced in `siteConfig.ogImage`. Create a custom one:
+
+1. Design a 1200×630 image (Figma, Canva, or [og-playground.vercel.app](https://og-playground.vercel.app))
+2. Export as `og.jpg` and put it in `apps/web/public/`
+3. Update `siteConfig.ogImage` to point to it
+
+For dynamic OG images per page, Next.js has a built-in [ImageResponse API](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image).
+
+---
+
+## Email Sender Name
+
+Update the sender name in your `.env.local`:
+
+```env
+EMAIL_FROM=YourApp <hello@yourdomain.com>
+```
+
+And update the email templates in `packages/email/src/templates/` to use your brand name instead of "LaunchKit".

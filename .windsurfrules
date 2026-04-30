@@ -1,0 +1,99 @@
+# LaunchKit — Windsurf Rules
+
+You are working on **LaunchKit**, a production-ready Next.js 15 SaaS boilerplate.
+
+## Stack (current — do not deviate)
+
+- **Framework**: Next.js 15 App Router + TypeScript (strict)
+- **Database**: Neon Postgres (serverless) + Drizzle ORM — OR — Supabase + Drizzle ORM
+- **Auth**: Clerk (multi-tenant, orgs, webhooks) — only provider
+- **Billing**: Stripe only (Apple Pay + Google Pay + Link via Checkout) — one-time purchase
+- **UI**: Tailwind CSS + shadcn/ui + Radix primitives
+- **AI**: Vercel AI SDK — 11 providers via `getModel()` factory in `lib/ai.ts`
+- **Email**: React Email + Resend
+- **Monorepo**: Turborepo + pnpm workspaces
+
+## Critical Rules
+
+### TypeScript
+- Add `// @ts-nocheck` to ANY file that imports from `@launchkit/database` (Drizzle dual-instance type conflict)
+- No `any` without justification, no casting without reason
+- Prefer `interface` for object shapes, `type` for unions
+
+### Components
+- Default to **Server Components** — add `"use client"` only when you need hooks, browser APIs, or event handlers
+- Keep client components at leaf level
+- Import from `@/components/ui/` for shadcn primitives
+
+### Database
+```typescript
+// Always import from the package, never raw drizzle-orm in app code
+import { db } from "@launchkit/database";
+import { users } from "@launchkit/database/schema/users";
+import { eq, and, desc } from "drizzle-orm";
+
+const row = await db.select().from(users).where(eq(users.id, id));
+```
+
+### Auth (every API route)
+```typescript
+import { auth } from "@clerk/nextjs/server";
+const { userId, orgId } = await auth();
+if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+```
+
+### AI calls
+```typescript
+// NEVER instantiate providers directly — always use the factory
+import { getModel } from "@/lib/ai";
+import { streamText } from "ai";
+
+const result = streamText({ model: getModel("gpt-5.4-mini"), messages });
+return result.toDataStreamResponse();
+```
+
+### Email
+```typescript
+import { sendEmail, PurchaseConfirmationEmail } from "@launchkit/email";
+await sendEmail({ to: email, subject: "...", react: PurchaseConfirmationEmail({ ... }) });
+```
+
+### Routing
+- Add new public routes to `publicRoutes[]` in `apps/web/middleware.ts`
+- Never bypass middleware for protected routes
+
+## Monorepo Structure
+
+```
+apps/web/               → Next.js 15 main app
+  app/
+    api/                → API routes (always auth-check first)
+    dashboard/          → Protected pages
+    (marketing)/        → Public landing, pricing, demo, prompts
+    portal/             → Post-purchase GitHub access delivery
+  components/
+    ui/                 → shadcn/ui primitives
+    dashboard/          → Sidebar, header
+    ai/                 → Chat, image gen, agents
+    plugins/            → Feedback, testimonials, roadmap, waitlist
+  lib/
+    ai.ts               → AI factory (getModel)
+    github.ts           → GitHub invite automation
+    entitlement.ts      → Purchase verification
+  middleware.ts         → Clerk auth + publicRoutes
+
+packages/
+  database/             → Drizzle schema + Neon client
+  email/                → React Email templates
+  storage/              → Multi-provider (Vercel Blob, S3, Supabase)
+  create-launchkit/     → CLI tool (npx create-launchkit@latest)
+  mcp-server/           → MCP server for AI tool integration
+```
+
+## DO NOT
+- Use `Lemon Squeezy` — removed from codebase
+- Use `Trigger.dev` — removed, use Vercel cron or Next.js route handlers
+- Import `@launchkit/database` in client components
+- Instantiate AI providers directly (use `getModel()`)
+- Create API routes that skip `auth()` for protected resources
+- Add `"use client"` to page.tsx files unless absolutely required

@@ -1,0 +1,44 @@
+{
+  "name": "@launchkit/database",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./multi-region": {
+      "types": "./src/multi-region.ts",
+      "default": "./src/multi-region.ts"
+    },
+    "./schema": {
+      "types": "./src/schema/index.ts",
+      "default": "./src/schema/index.ts"
+    },
+    "./schema/ai-usage": {
+      "types": "./src/schema/ai-usage.ts",
+      "default": "./src/schema/ai-usage.ts"
+    }
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/seed.ts",
+    "db:demo": "tsx src/demo-seed.ts"
+  },
+  "dependencies": {
+    "@launchkit/config": "workspace:*",
+    "@neondatabase/serverless": "^1.0.0",
+    "drizzle-orm": "^0.44.0"
+  },
+  "devDependencies": {
+    "@launchkit/tsconfig": "workspace:*",
+    "drizzle-kit": "^0.31.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

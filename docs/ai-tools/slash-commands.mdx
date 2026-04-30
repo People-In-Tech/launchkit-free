@@ -1,0 +1,126 @@
+---
+title: Slash Commands
+description: Claude Code slash commands included in LaunchKit — generate full modules, push schema, and more.
+---
+
+# Slash Commands
+
+LaunchKit includes custom Claude Code slash commands in `.claude/commands/`. These let you generate full modules, run checks, and scaffold new features with a single command.
+
+Use them in Claude Code with `/project:<command-name>`.
+
+---
+
+## `/project:scaffold <name>`
+
+**Generate a complete CRUD module in seconds.**
+
+```
+/project:scaffold feedback
+```
+
+Creates:
+- `packages/database/src/schema/feedback.ts` — Drizzle schema
+- `apps/web/app/api/feedback/route.ts` — GET / POST / DELETE handlers
+- `apps/web/app/dashboard/feedback/page.tsx` — Dashboard page
+- `apps/web/components/feedback/FeedbackTable.tsx` — Data table
+- `apps/web/components/feedback/FeedbackForm.tsx` — Create form
+- `apps/web/components/feedback/FeedbackPageClient.tsx` — Client orchestrator
+
+**After running:**
+1. Export the schema from `packages/database/src/schema/index.ts`
+2. Run `pnpm db:push`
+3. Add a sidebar nav entry in `apps/web/components/dashboard/sidebar.tsx`
+
+---
+
+## `/project:db-push`
+
+Push Drizzle schema changes to your Neon database.
+
+```
+/project:db-push
+```
+
+Equivalent to running:
+
+```bash
+pnpm db:push
+```
+
+**When to use:**
+- After adding or modifying a table in `packages/database/src/schema/`
+- After running `/project:scaffold`
+
+---
+
+## `/project:add-provider <name>`
+
+Add a new AI provider to the LaunchKit provider factory.
+
+```
+/project:add-provider groq
+```
+
+Modifies:
+- `apps/web/lib/ai.ts` — adds provider to `getModel()` factory
+- `packages/config/src/stack.ts` — adds model IDs
+- `.env.example` — adds the API key variable
+
+---
+
+## `/project:new-plugin <name>`
+
+Create a new drop-in plugin module.
+
+```
+/project:new-plugin waitlist
+```
+
+Creates:
+- `apps/web/components/plugins/waitlist/index.tsx` — component
+- `apps/web/app/api/plugins/waitlist/route.ts` — API route
+- `packages/database/src/schema/waitlist.ts` — schema
+
+---
+
+## `/project:run-ci`
+
+Run the full CI pipeline locally before pushing.
+
+```
+/project:run-ci
+```
+
+Runs:
+
+```bash
+pnpm typecheck && pnpm lint
+```
+
+Use this before any `git push` to catch type errors and lint issues.
+
+---
+
+## Writing Your Own Slash Command
+
+Add a new file to `.claude/commands/`:
+
+```markdown
+# My Command
+
+Short description of what it does.
+
+## Usage
+`/project:my-command <arg>`
+
+## Steps
+1. Do this first
+2. Then do this
+3. Run: pnpm dev
+
+## Pattern to follow
+Look at apps/web/app/api/billing/checkout/route.ts for the correct structure.
+```
+
+The filename becomes the command name. `my-command.md` → `/project:my-command`.

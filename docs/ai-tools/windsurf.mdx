@@ -1,0 +1,37 @@
+---
+title: Windsurf
+description: "Windsurf (Cascade) rules for LaunchKit"
+---
+
+## Overview
+
+LaunchKit ships a `.windsurfrules` file at the repo root. Windsurf's Cascade reads this to understand project conventions, patterns, and DOs/DON'Ts.
+
+## Setup
+
+No setup required. Open the project folder in Windsurf — Cascade picks up `.windsurfrules` automatically.
+
+## Cascade Flows
+
+Windsurf's Cascade works best with LaunchKit when you:
+
+1. **Describe the end state**, not the steps — "Add a products CRUD module with a dashboard page" works better than step-by-step instructions
+2. **Reference the existing schema** — "Follow the same pattern as `packages/database/src/schema/users.ts`"
+3. **Ask it to typecheck** — "After making changes, run `pnpm typecheck` and fix any errors"
+
+## Multi-File Edits
+
+Cascade handles multi-file edits well. Common patterns:
+
+- "Add a `subscriptions` table following the Drizzle schema pattern, export it from the index, and push to Neon"
+- "Create a new dashboard page for subscription management, add it to the sidebar nav"
+- "Add a new Resend email template for subscription confirmation, following the pattern in `packages/email/src/templates/`"
+
+## Rules File Location
+
+```
+launchkit/
+└── .windsurfrules     # Windsurf reads this automatically
+```
+
+The file is comprehensive — covering architecture, conventions, imports, and anti-patterns. Update it when you establish new project-wide conventions.

@@ -1,0 +1,58 @@
+---
+title: Haveno — Marketplace Template
+description: A digital marketplace starter built on LaunchKit. List, sell, and deliver digital products.
+---
+
+<Warning>
+  Pro tier only. This template is included in the **Teams** plan or available as a standalone add-on.
+</Warning>
+
+## Overview
+
+Haveno is a marketplace template for selling digital products — SaaS tools, templates, courses, and downloads. Built on top of LaunchKit with multi-vendor support.
+
+## What's Included
+
+- **Seller onboarding** — Stripe Connect Express for marketplace payouts
+- **Product listings** — title, description, price, preview, and download URL
+- **Buyer flow** — checkout → instant digital delivery via email (Resend)
+- **Dashboard** — sellers see revenue, buyers see purchases
+- **Search** — full-text product search via Postgres `tsvector`
+- **Admin** — approve/reject listings, manage payouts
+
+## Database Schema
+
+```ts
+products, sellers, purchases, payouts
+```
+
+Three new tables on top of the core LaunchKit schema.
+
+## Getting Started
+
+```bash
+npx create-launchkit@latest my-marketplace --template haveno
+```
+
+This creates a new LaunchKit project pre-configured with the Haveno schema and pages.
+
+## Stripe Connect Setup
+
+Haveno uses Stripe Connect for marketplace payouts:
+
+1. Enable Stripe Connect in your [Stripe Dashboard](https://dashboard.stripe.com/connect)
+2. Add `STRIPE_CONNECT_CLIENT_ID` to your `.env.local`
+3. Run `pnpm db:push` to apply the new tables
+
+## Key Files
+
+| Path | Description |
+|------|-------------|
+| `apps/web/app/(marketplace)/` | All marketplace pages |
+| `apps/web/app/api/connect/` | Stripe Connect OAuth routes |
+| `packages/database/src/schema/products.ts` | Product schema |
+| `packages/email/src/templates/purchase-confirmation.tsx` | Buyer receipt email |
+
+## Customization
+
+Point your AI at `apps/web/app/(marketplace)/` and describe what you want to change. The structure follows the same patterns as the rest of LaunchKit.

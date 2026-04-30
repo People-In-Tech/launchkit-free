@@ -1,0 +1,14 @@
+{
+  "name": "changelog",
+  "description": "Product changelog with timeline view and RSS feed",
+  "version": "1.0.0",
+  "files": [
+    { "src": "components/changelog-list.tsx", "dest": "components/plugins/changelog/changelog-list.tsx" },
+    { "src": "components/changelog-entry.tsx", "dest": "components/plugins/changelog/changelog-entry.tsx" },
+    { "src": "components/changelog-admin.tsx", "dest": "components/plugins/changelog/changelog-admin.tsx" },
+    { "src": "api/route.ts", "dest": "app/api/changelog/route.ts" },
+    { "src": "api/rss/route.ts", "dest": "app/api/changelog/rss/route.ts" }
+  ],
+  "schema": "schema.ts",
+  "dependencies": []
+}

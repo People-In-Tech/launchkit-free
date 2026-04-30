@@ -1,0 +1,80 @@
+---
+title: Waitlist
+description: Launch with a waitlist. Collect emails, track signups, and drip invite codes with Resend.
+---
+
+## Overview
+
+The Waitlist plugin replaces your app's main entry point with a pre-launch waitlist page. Collect emails, send confirmation emails, and batch-invite users when you're ready to launch.
+
+## Setup
+
+```ts
+// apps/web/middleware.ts
+import { waitlistMiddleware } from "@launchkit/plugins/waitlist";
+
+export default waitlistMiddleware({
+  enabled: process.env.WAITLIST_ENABLED === "true",
+  // Signed-in users bypass the waitlist
+  bypassForAuth: true,
+});
+```
+
+```bash
+WAITLIST_ENABLED=true   # set to false to open the app
+```
+
+## Schema
+
+```ts
+export const waitlistEntries = pgTable("waitlist_entries", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  referredBy: text("referred_by"),   // referral tracking
+  position: serial("position"),
+  status: text("status").default("waiting"),  // "waiting" | "invited" | "joined"
+  inviteCode: text("invite_code"),
+  invitedAt: timestamp("invited_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+```
+
+## Waitlist Page
+
+A pre-styled waitlist landing page is at `apps/web/app/waitlist/page.tsx`. Customize copy, add your logo, and wire up your social links — it renders the signup form automatically.
+
+## Sending Invites
+
+Batch invite from the admin panel at `/admin/waitlist` or via CLI:
+
+```bash
+# Invite the next 50 people on the waitlist
+pnpm waitlist:invite --count 50
+```
+
+This generates unique invite codes and sends personalized Resend emails.
+
+## Referral Tracking
+
+Share referral links to move up the waitlist:
+
+```
+https://yourdomain.com/waitlist?ref=USER_ID
+```
+
+Referrers see their position update in real time. Track top referrers in the admin panel.
+
+## Invite Email Template
+
+Customize the invite email at:
+
+```
+packages/email/src/templates/waitlist-invite.tsx
+```
+
+Preview it with:
+
+```bash
+pnpm email:dev
+```

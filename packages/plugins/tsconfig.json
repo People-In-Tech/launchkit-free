@@ -1,0 +1,10 @@
+{
+  "extends": "@launchkit/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts", "plugins/**/*.ts", "plugins/**/*.json"],
+  "exclude": ["node_modules"]
+}

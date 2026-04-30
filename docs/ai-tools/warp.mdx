@@ -1,0 +1,46 @@
+---
+title: Warp
+description: Using Warp terminal with LaunchKit — AI-powered commands, workflows, and one-liners.
+---
+
+## Overview
+
+[Warp](https://www.warp.dev/) is an AI-native terminal. LaunchKit ships `.warp/` at the repo root with pre-built workflows for common dev tasks.
+
+## Setup
+
+No config needed. Open the `launchkit/` directory in Warp and the workflows appear under **Warp Drive → Workflows**.
+
+## Included Workflows
+
+| Workflow | What it does |
+|----------|--------------|
+| `dev-setup` | Installs deps, copies `.env.example`, and starts the dev server |
+| `deploy` | Runs typecheck + builds + deploys to Vercel production |
+| `scaffold` | Interactive scaffolder for new modules (table, page, API route, email) |
+
+## AI Commands (Warp AI)
+
+Warp AI has the full terminal context. Useful prompts:
+
+```
+Push the Drizzle schema to Neon and show me any migration warnings
+```
+
+```
+Run the BDD smoke tests and tail the output
+```
+
+```
+Show me all failing TypeScript errors across the monorepo
+```
+
+## Warp Drive
+
+Share workflows across your team by syncing `.warp/` to your team's Warp Drive. Team members get the same commands without copy-pasting.
+
+## Tips
+
+- Use `Ctrl+R` for AI history search — finds exact pnpm commands you've run before
+- Warp's block output makes reading `turbo run build` output much cleaner than standard terminals
+- Pin the `pnpm dev` block to keep server logs separate from your commands

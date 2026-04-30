@@ -1,0 +1,97 @@
+---
+title: Quickstart
+description: "Go from zero to a running SaaS in under 5 minutes"
+---
+
+## Prerequisites
+
+- Node.js 20+
+- pnpm 9+ (`npm i -g pnpm`)
+- A [Neon](https://neon.tech) account (free tier works)
+- A [Clerk](https://clerk.com) account (free tier works)
+- A [Stripe](https://stripe.com) account
+
+## 1. Scaffold your project
+
+```bash
+npx create-launchkit@latest my-app --db=neon
+```
+
+The CLI will prompt you to confirm your stack, then scaffold the full project, write your `.env.local`, and run database migrations.
+
+<Note>
+  Start with the [free template](https://github.com/CalebKing3/launchkit) to explore the codebase before purchasing. The CLI command above uses the same tooling.
+</Note>
+
+## 2. Configure environment variables
+
+After the CLI runs, open `.env.local` and fill in the missing keys:
+
+```bash
+# Auth — get from https://dashboard.clerk.com
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+
+# Database — get from https://console.neon.tech
+DATABASE_URL=postgresql://...
+
+# Payments — get from https://dashboard.stripe.com
+STRIPE_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Email — get from https://resend.com/api-keys
+RESEND_API_KEY=re_...
+EMAIL_FROM=YourApp <hello@yourdomain.com>
+
+# AI — get from https://platform.openai.com
+OPENAI_API_KEY=sk-...
+```
+
+See [Environment Variables](/deployment/environment-variables) for the complete reference.
+
+## 3. Start the dev server
+
+```bash
+cd my-app
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Your app is running.
+
+## 4. Set up Stripe webhooks (local)
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+Copy the webhook signing secret into `STRIPE_WEBHOOK_SECRET`.
+
+## 5. Deploy to Vercel
+
+```bash
+npx vercel deploy --prod
+```
+
+Or push to `main` — if you connected Vercel to your repo, it deploys automatically.
+
+<Check>You're live. Go build your product.</Check>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Auth Setup" icon="lock" href="/auth/overview">
+    Configure Clerk sign-in flows and webhooks
+  </Card>
+  <Card title="Billing Setup" icon="credit-card" href="/billing/overview">
+    Set up Stripe products, prices, and webhooks
+  </Card>
+  <Card title="AI IDE Rules" icon="sparkles" href="/contributing/claude-code">
+    Point your AI agent at the codebase
+  </Card>
+  <Card title="Templates" icon="layout-template" href="/templates/overview">
+    Pick a niche template and customize it
+  </Card>
+</CardGroup>

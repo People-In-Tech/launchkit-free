@@ -1,0 +1,46 @@
+---
+title: Cursor
+description: "Cursor rules for LaunchKit — 300 lines of project context"
+---
+
+## Overview
+
+LaunchKit ships a `.cursorrules` file at the repo root. Cursor reads this automatically to understand:
+
+- Full monorepo structure
+- Database patterns and import conventions
+- Auth patterns with Clerk
+- API route conventions
+- AI provider factory
+- TypeScript patterns
+
+## Setup
+
+No setup required. Open the project in Cursor:
+
+1. File → Open Folder → select `launchkit/`
+2. Cursor reads `.cursorrules` automatically
+
+## Composer Best Practices
+
+When using Cursor Composer with LaunchKit:
+
+- **Tag relevant files** — use `@` to reference schema files when adding DB changes
+- **Use the scaffold pattern** — ask Cursor to "scaffold a products module using the same pattern as apps/web/app/dashboard/"
+- **Reference existing components** — "create a new page following the same pattern as apps/web/app/dashboard/ai/page.tsx"
+
+## Agent Mode
+
+Cursor's Agent mode works well with LaunchKit's convention-first structure. Key tips:
+
+- Always start by referencing the monorepo structure in your prompt
+- Reference `packages/database/src/schema/` when asking for DB changes
+- Ask it to run `pnpm typecheck` after making changes
+
+## Custom Instructions
+
+If you want to add project-specific instructions beyond `.cursorrules`, add them in:
+
+**Cursor Settings → Rules for AI → Project Rules**
+
+Or modify `.cursorrules` directly — it's versioned in the repo so your whole team benefits.

@@ -1,0 +1,257 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "search": "Search",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "retry": "Try Again",
+    "learnMore": "Learn More",
+    "viewAll": "View All",
+    "copyToClipboard": "Copy to clipboard",
+    "copied": "Copied!"
+  },
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "changelog": "Changelog",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "documentation": "Documentation"
+  },
+  "home": {
+    "badge": "Now with AI Agent integration",
+    "title": "Ship your SaaS",
+    "titleHighlight": "this weekend.",
+    "subtitle": "The production-ready starter kit with auth, billing, teams, and AI — built on the stack you actually want to use.",
+    "cta": "Get Started Free",
+    "secondaryCta": "See Features",
+    "featuresLabel": "Features",
+    "featuresTitle": "Everything you need. Nothing you don't.",
+    "featuresSubtitle": "A complete foundation for any SaaS — auth, billing, teams, AI, admin, and marketing pages.",
+    "ctaTitle": "Ready to ship?",
+    "ctaSubtitle": "Stop rebuilding infrastructure. Start building your product.",
+    "footer": {
+      "tagline": "The modern SaaS starter kit.",
+      "product": "Product",
+      "resources": "Resources",
+      "legal": "Legal",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "copyright": "© 2026 LaunchKit. All rights reserved.",
+      "builtWith": "Built with LaunchKit, obviously."
+    }
+  },
+  "features": {
+    "auth": {
+      "title": "Authentication by Clerk",
+      "description": "Email, magic link, social logins, MFA, and user profiles — all pre-built."
+    },
+    "billing": {
+      "title": "Stripe Billing",
+      "description": "Subscriptions, per-seat pricing, free trials, and a customer portal."
+    },
+    "teams": {
+      "title": "Multi-Tenant Teams",
+      "description": "Organizations, team invites, roles, and per-org settings."
+    },
+    "ai": {
+      "title": "AI Integration",
+      "description": "Vercel AI SDK with multi-provider support, streaming chat, and credit system."
+    },
+    "database": {
+      "title": "Neon + Drizzle",
+      "description": "Serverless Postgres with type-safe queries and auto-scaling."
+    },
+    "ui": {
+      "title": "shadcn/ui + Tailwind",
+      "description": "Beautiful, accessible components. Dark mode. Fully customizable."
+    },
+    "admin": {
+      "title": "SuperAdmin/Admin",
+      "description": "User management, analytics, revenue metrics, and AI usage monitoring."
+    },
+    "email": {
+      "title": "Email Templates",
+      "description": "React Email + Resend for welcome sequences, billing alerts, and invites."
+    },
+    "dx": {
+      "title": "AI-Optimized DX",
+      "description": "Custom rules for Claude Code, Cursor, and Codex. MCP server included."
+    },
+    "plugins": {
+      "title": "Plugins & Add-ons",
+      "description": "Feedback widget, waitlist, testimonials, roadmap, and file uploads."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back. Here's an overview of your workspace.",
+    "stats": {
+      "aiCredits": "AI Credits",
+      "teamMembers": "Team Members",
+      "apiCalls": "API Calls",
+      "currentPlan": "Current Plan"
+    },
+    "recentActivity": "Recent Activity",
+    "quickActions": "Quick Actions",
+    "actions": {
+      "newAiChat": "New AI Chat",
+      "inviteTeam": "Invite Team",
+      "viewAnalytics": "View Analytics",
+      "manageBilling": "Manage Billing"
+    },
+    "sidebar": {
+      "main": "Main",
+      "aiChat": "AI Chat",
+      "analytics": "Analytics",
+      "documents": "Documents",
+      "settings": "Settings",
+      "general": "General",
+      "billing": "Billing",
+      "team": "Team",
+      "profile": "Profile"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in to your account",
+      "subtitle": "Welcome back"
+    },
+    "signUp": {
+      "title": "Create your account",
+      "subtitle": "Get started for free"
+    }
+  },
+  "billing": {
+    "title": "Simple, transparent pricing",
+    "subtitle": "Start free, upgrade when you need more. No hidden fees.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "saveUpTo": "Save up to {percent}%",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "billedAnnually": "${amount}/mo billed annually",
+    "save": "Save {percent}%",
+    "free": "Free",
+    "annualNote": "All annual plans are billed in one payment upfront. You can cancel at any time and receive a prorated refund for unused months.",
+    "mostPopular": "Most Popular",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "For trying out the platform.",
+        "cta": "Get Started"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For professional developers.",
+        "cta": "Start Free Trial"
+      },
+      "team": {
+        "name": "Team",
+        "description": "For growing teams and businesses.",
+        "cta": "Contact Sales"
+      }
+    },
+    "features": {
+      "oneProject": "1 project",
+      "100Credits": "100 AI credits/month",
+      "communitySupport": "Community support",
+      "basicAnalytics": "Basic analytics",
+      "unlimitedProjects": "Unlimited projects",
+      "5000Credits": "5,000 AI credits/month",
+      "prioritySupport": "Priority support",
+      "advancedAnalytics": "Advanced analytics",
+      "customDomain": "Custom domain",
+      "teamCollaboration": "Team collaboration",
+      "everythingInPro": "Everything in Pro",
+      "25000Credits": "25,000 AI credits/month",
+      "25TeamMembers": "Up to 25 team members",
+      "adminDashboard": "Admin dashboard",
+      "ssoIntegration": "SSO integration",
+      "dedicatedSupport": "Dedicated support",
+      "slaGuarantee": "SLA guarantee"
+    }
+  },
+  "settings": {
+    "general": {
+      "title": "General Settings",
+      "subtitle": "Manage your workspace settings.",
+      "workspaceName": "Workspace Name",
+      "workspaceNameDescription": "This is the display name for your workspace.",
+      "workspaceNamePlaceholder": "Workspace name",
+      "saveChanges": "Save Changes",
+      "saved": "Workspace name saved.",
+      "emptyError": "Workspace name cannot be empty.",
+      "saveError": "Failed to save changes. Please try again.",
+      "dangerZone": "Danger Zone",
+      "dangerDescription": "Irreversible and destructive actions.",
+      "deleteWorkspace": "Delete Workspace",
+      "deleteConfirm": "Are you sure? This will permanently delete your workspace and all its data.",
+      "deleted": "Workspace deleted.",
+      "deleteError": "Failed to delete workspace. Please try again."
+    },
+    "billing": {
+      "title": "Billing Settings",
+      "subtitle": "Manage your subscription and payment methods."
+    },
+    "team": {
+      "title": "Team Settings",
+      "subtitle": "Manage your team members and invitations."
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "subtitle": "Manage your personal profile."
+    }
+  },
+  "errors": {
+    "notFound": {
+      "code": "404",
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has been moved.",
+      "goHome": "Go Home",
+      "goToDashboard": "Go to Dashboard"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred. Our team has been notified. Please try again or go back home.",
+      "tryAgain": "Try Again",
+      "goHome": "Go Home"
+    },
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "serverError": "Internal Server Error"
+  },
+  "upload": {
+    "dropzone": {
+      "title": "Drop files here or click to browse",
+      "subtitle": "Supports {types} up to {maxSize}",
+      "uploading": "Uploading...",
+      "error": "Upload failed. Please try again.",
+      "success": "File uploaded successfully.",
+      "tooLarge": "File is too large. Maximum size is {maxSize}.",
+      "invalidType": "Invalid file type. Allowed types: {types}."
+    },
+    "avatar": {
+      "change": "Change avatar",
+      "remove": "Remove avatar"
+    }
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français"
+  }
+}

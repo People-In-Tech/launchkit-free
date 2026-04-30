@@ -1,0 +1,15 @@
+---
+name: LaunchKit — Deploy to Vercel
+description: Build and deploy LaunchKit to Vercel production
+tags: [launchkit, deploy, vercel]
+author: people-in-tech
+---
+steps:
+  - name: Build
+    command: npx turbo build --filter=@launchkit/web --force
+  - name: Commit
+    command: git add -A && git commit -m "deploy: production update"
+  - name: Push to main
+    command: git push origin main
+  - name: Deploy to Vercel
+    command: NODE_TLS_REJECT_UNAUTHORIZED=0 npx vercel deploy --prod --yes

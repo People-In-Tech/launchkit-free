@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "pnpm turbo build --filter=@launchkit/web",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "outputDirectory": "apps/web/.next",
+  "rewrites": [
+    {
+      "source": "/docs",
+      "destination": "https://launchkit.mintlify.dev"
+    },
+    {
+      "source": "/docs/:match*",
+      "destination": "https://launchkit.mintlify.dev/:match*"
+    }
+  ],
+  "crons": [
+    { "path": "/api/cron/leads-sequence", "schedule": "0 8 * * *" },
+    { "path": "/api/cron/github-invite-reminder", "schedule": "0 14 * * *" }
+  ]
+}

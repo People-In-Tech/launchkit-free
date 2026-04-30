@@ -1,0 +1,119 @@
+---
+title: AI Agents
+description: Build multi-step AI agents in LaunchKit using the Vercel AI SDK's tool-calling primitives.
+---
+
+## Overview
+
+LaunchKit uses the [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling) for agents. Tools are typed TypeScript functions — the model decides when to call them.
+
+## Defining Tools
+
+```ts
+import { tool } from "ai";
+import { z } from "zod";
+import { db } from "@launchkit/database";
+import { users } from "@launchkit/database/schema";
+
+const getUserTool = tool({
+  description: "Get a user's profile by their ID",
+  parameters: z.object({
+    userId: z.string().describe("The Clerk user ID"),
+  }),
+  execute: async ({ userId }) => {
+    const user = await db.query.users.findFirst({
+      where: (u, { eq }) => eq(u.id, userId),
+    });
+    return user ?? { error: "User not found" };
+  },
+});
+```
+
+## Running an Agent
+
+```ts
+import { generateText } from "ai";
+import { getModel } from "@launchkit/ai";
+
+const model = getModel("gpt-4o");
+
+const result = await generateText({
+  model,
+  tools: { getUser: getUserTool, searchDocuments: searchDocumentsTool },
+  maxSteps: 5,          // max tool call rounds
+  system: "You are a helpful assistant...",
+  prompt: userMessage,
+});
+```
+
+## Streaming Agent Responses
+
+```ts
+// app/api/agent/route.ts
+import { streamText } from "ai";
+import { getModel } from "@launchkit/ai";
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  const model = getModel();
+
+  const result = await streamText({
+    model,
+    messages,
+    tools: { ...yourTools },
+    maxSteps: 10,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+## Client-Side Hook
+
+```tsx
+"use client";
+import { useChat } from "ai/react";
+
+export function AgentChat() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: "/api/agent",
+  });
+
+  return (
+    <div>
+      {messages.map(m => (
+        <div key={m.id}>
+          <strong>{m.role}</strong>: {m.content}
+          {m.toolInvocations?.map(t => (
+            <div key={t.toolCallId}>
+              Calling {t.toolName}...
+            </div>
+          ))}
+        </div>
+      ))}
+      <form onSubmit={handleSubmit}>
+        <input value={input} onChange={handleInputChange} />
+        <button type="submit" disabled={isLoading}>Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+## Rate Limiting
+
+Protect agent routes with the included rate limiter:
+
+```ts
+import { rateLimit } from "@/lib/rate-limit";
+
+export async function POST(req: Request) {
+  const { userId } = await auth();
+  await rateLimit(`agent:${userId}`, { limit: 20, window: "1m" });
+  // ...
+}
+```
+
+## Background Agents
+
+For long-running tasks, use a queue instead of a streaming response. See [Inngest](https://www.inngest.com/) or Vercel's background functions for durable execution.

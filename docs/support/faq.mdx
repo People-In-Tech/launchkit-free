@@ -1,0 +1,158 @@
+---
+title: FAQ
+description: The most common questions from LaunchKit buyers, answered.
+---
+
+# Frequently Asked Questions
+
+<AccordionGroup>
+
+  <Accordion title="How do I get access to the private repo after purchasing?" defaultOpen>
+    After checkout, you're redirected to `getlaunchkit.app/portal`. Enter your GitHub username and you'll receive an invite to the `launchkit-pro` private repo within a few seconds.
+
+    If you didn't get an invite, check that:
+    - The GitHub username you entered is correct (case-sensitive)
+    - You checked the email associated with your GitHub account for the invite notification
+    - The invite hasn't expired (GitHub invites expire after 7 days)
+
+    Email [hello@getlaunchkit.app](mailto:hello@getlaunchkit.app) if you're still stuck.
+  </Accordion>
+
+  <Accordion title="Do I get future updates for free?">
+    Yes. All updates ship to the `main` branch of the private repo. Pull whenever you want:
+
+    ```bash
+    git pull origin main
+    ```
+
+    Check the [Changelog](https://getlaunchkit.app/changelog) to see what's new before pulling. See the full [updating guide →](/support/updating) for how to handle conflicts.
+  </Accordion>
+
+  <Accordion title="What's the difference between Solo ($149) and Teams ($299)?">
+    | Feature | Solo | Teams |
+    |---|---|---|
+    | Projects | 1 | Up to 3 |
+    | Multi-tenant organizations | ❌ | ✅ |
+    | Team member invites | ❌ | ✅ |
+    | Org roles (admin/member) | ❌ | ✅ |
+    | Everything else | ✅ | ✅ |
+
+    Solo is for a single-user SaaS (no team workspaces). Teams unlocks Clerk organizations so your users can invite teammates and manage roles — standard for B2B SaaS.
+  </Accordion>
+
+  <Accordion title="Can I use LaunchKit to build a product I'll sell to others?">
+    Yes, absolutely. That's the whole point. You buy LaunchKit once, build your SaaS on top of it, and sell it to as many customers as you want. The license covers building one production product.
+
+    You cannot resell or redistribute LaunchKit itself (the boilerplate), create derivative boilerplates, or give the source code to clients as a deliverable.
+  </Accordion>
+
+  <Accordion title="What Node.js and pnpm version do I need?">
+    - **Node.js**: 20 or higher (`node --version`)
+    - **pnpm**: 9.15 or higher (`pnpm --version`)
+
+    ```bash
+    # Install the latest pnpm
+    npm install -g pnpm@latest
+    ```
+  </Accordion>
+
+  <Accordion title="Can I use Supabase instead of Neon?">
+    Not out of the box in v1.0.0 — the database package is wired for Neon. Supabase uses a compatible Postgres connection string, so you can point `DATABASE_URL` at Supabase and it'll mostly work. However, the Neon-specific features (branching, pgvector) won't apply.
+
+    Full multi-database adapter support is planned for v2.0.0.
+  </Accordion>
+
+  <Accordion title="Can I use NextAuth instead of Clerk?">
+    Not in v1.0.0. The auth layer is tightly integrated with Clerk throughout the middleware, dashboard, and admin panel. Swapping it requires significant refactoring.
+
+    Configurable auth adapters (NextAuth, Supabase Auth) are on the v2.0.0 roadmap.
+  </Accordion>
+
+  <Accordion title="How do I test Stripe payments without real money?">
+    Use Stripe's test mode. Your `sk_test_` and `pk_test_` keys are for test mode. Use these test cards:
+
+    | Card | Result |
+    |---|---|
+    | `4242 4242 4242 4242` | Payment succeeds |
+    | `4000 0000 0000 0002` | Payment declined |
+    | `4000 0025 0000 3155` | 3D Secure required |
+
+    Any future expiry date and any 3-digit CVV work.
+  </Accordion>
+
+  <Accordion title="My Vercel build failed. What do I check?">
+    95% of Vercel build failures are missing environment variables. Go to Vercel → your project → Settings → Environment Variables and verify:
+
+    1. `DATABASE_URL` is set and includes `?sslmode=require`
+    2. Both Clerk keys are set (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`)
+    3. `NEXT_PUBLIC_APP_URL` is set to your production domain (not `localhost`)
+    4. Both Stripe keys are set
+    5. `RESEND_API_KEY` and `EMAIL_FROM` are set
+
+    See the full [environment variable reference →](/deploy/env-reference)
+  </Accordion>
+
+  <Accordion title="How do I rename the app and change the logo?">
+    Three files to edit:
+
+    1. `packages/config/src/site.ts` — change `name`, `description`, `url`
+    2. `apps/web/public/` — replace `logo.svg` and `favicon.ico`
+    3. `packages/email/src/templates/` — update the sender name in email templates
+
+    Full guide: [Branding & Copy →](/customize/branding)
+  </Accordion>
+
+  <Accordion title="How do I make someone an admin?">
+    1. Go to your Clerk Dashboard → Users → click the user
+    2. Click **Edit** on Public metadata
+    3. Add:
+
+    ```json
+    { "role": "super_admin" }
+    ```
+
+    4. Save. Takes effect on their next page load — no redeploy needed.
+  </Accordion>
+
+  <Accordion title="How do I add a new page to the dashboard?">
+    Create a file at `apps/web/app/dashboard/my-page/page.tsx`. It's automatically protected by middleware. Then add a link to it in the sidebar component at `apps/web/components/dashboard/sidebar.tsx`.
+
+    **Give this to Claude:** *"Add a page at /dashboard/feedback. It should show a table of user feedback from the database. Follow the same structure as the existing dashboard pages."*
+  </Accordion>
+
+  <Accordion title="How do I see my emails before sending them?">
+    Open `http://localhost:3000/email-preview` while running `pnpm dev`. All email templates render live in your browser with hot reload.
+
+    Sent emails (in development) appear in your [Resend dashboard](https://resend.com) under **Emails**.
+  </Accordion>
+
+  <Accordion title="Does LaunchKit work with AI features like chat and RAG?">
+    The database is pgvector-ready (enable the extension in Neon and add a vector column — see [Database docs →](/build/database)). The Vercel AI SDK is included. OpenAI, Anthropic, and other provider keys are in `.env.example`.
+
+    The scaffold for AI features is there — building out chat, RAG, or agent features on top is what LaunchKit is designed for.
+  </Accordion>
+
+  <Accordion title="What's the TEAMS_ONLY environment variable?">
+    ```env
+    NEXT_PUBLIC_TEAMS_ONLY=true
+    ```
+
+    Setting this to `true` enables **B2B mode**: users must create or join an organization to access the app. Personal accounts are hidden. Use this if your SaaS is exclusively for teams/companies, not individuals.
+  </Accordion>
+
+  <Accordion title="How do I browse and edit my database?">
+    ```bash
+    pnpm db:studio
+    # Opens Drizzle Studio at https://local.drizzle.studio
+    ```
+
+    Full database browser — view tables, query data, edit rows directly. No separate database GUI tool needed.
+  </Accordion>
+
+  <Accordion title="How do I get help if I'm stuck?">
+    1. **These docs** — search with `Cmd+K`
+    2. **Ask your AI** — paste the error + relevant file path into Claude or Cursor. It knows the codebase.
+    3. **Email support** — [hello@getlaunchkit.app](mailto:hello@getlaunchkit.app) — typically reply within 24 hours
+  </Accordion>
+
+</AccordionGroup>

@@ -1,0 +1,116 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+# Cancel in-progress runs on the same branch when a new commit is pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    if: false
+    name: Playwright E2E (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Distributed across 4 parallel runners for optimal speed
+        shard: ["1/4", "2/4", "3/4", "4/4"]
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Node.js ─────────────────────────────────────────────────────────────
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # ── pnpm ────────────────────────────────────────────────────────────────
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9  # match packageManager in package.json
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      # ── Install dependencies ─────────────────────────────────────────────────
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── Playwright browsers ──────────────────────────────────────────────────
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/web/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        working-directory: apps/web
+        run: pnpm exec playwright install-deps
+
+      # ── Run E2E tests ────────────────────────────────────────────────────────
+      - name: Run Playwright E2E tests
+        working-directory: apps/web
+        run: pnpm test:e2e --shard=${{ matrix.shard }}
+        env:
+          CI: "true"
+          # Provide empty Clerk keys so Next.js can start without Clerk configured.
+          # The ClerkProvider is skipped when these are empty (see apps/web/app/layout.tsx).
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '' }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY || '' }}
+          # Stripe webhook secret (used by the /api/webhooks/stripe route in tests)
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET || 'whsec_test_placeholder' }}
+          # App URL used by Next.js metadata and absoluteUrl() helper
+          NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+
+      # ── Upload artifacts on failure ──────────────────────────────────────────
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.shard }}
+          path: apps/web/playwright-report/
+          retention-days: 14
+
+      - name: Upload test results and screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.shard }}
+          path: |
+            apps/web/test-results/
+          retention-days: 7

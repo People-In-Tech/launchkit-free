@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+.pnpm
+.pnpm-store
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+.turbo/
+
+# Vercel
+.vercel/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Debug and Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+*.log
+
+# Coverage
+coverage/
+
+# OS
+.DS_Store
+*.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# AI tool local settings
+.claude/settings.local.json
+.cursor/mcp.json
+.windsurf/settings.json
+*.local.json
+
+# Misc
+*.pem
+*.sqlite
+*.sqlite3
+*.db
+
+# Internal build and setup files (not for buyers)
+build-log.txt
+PRODUCTION_HANDOFF.md
+QA_CHECKLIST.md
+MAINTAINING.md
+
+# LaunchKit Marketing & Local Backups
+_blueprint_backup/
+MARKETING_PROMPT.md
+launchkit-prompts-page*.png
+
+# Local AI Tool Contexts & Settings
+.mcp.json
+.playwright-mcp/
+.gemini/
+.codex/

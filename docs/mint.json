@@ -1,0 +1,173 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "LaunchKit",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "modeToggle": {
+    "default": "dark"
+  },
+  "favicon": "/logo/favicon.svg",
+  "colors": {
+    "primary": "#4f46e5",
+    "light": "#818cf8",
+    "dark": "#3730a3",
+    "anchors": {
+      "from": "#4f46e5",
+      "to": "#06b6d4"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:hello@peopleintech.io"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get LaunchKit",
+    "url": "https://getlaunchkit.app/pricing"
+  },
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/CalebKing3/launchkit"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "getting-started/installation",
+        "getting-started/environment-setup",
+        "getting-started/first-deploy"
+      ]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "build/project-structure",
+        "build/adding-features",
+        "build/admin"
+      ]
+    },
+    {
+      "group": "Auth",
+      "pages": [
+        "auth/overview",
+        "setup/clerk",
+        "build/auth"
+      ]
+    },
+    {
+      "group": "Payments",
+      "pages": [
+        "billing/overview",
+        "setup/stripe",
+        "build/billing"
+      ]
+    },
+    {
+      "group": "Database",
+      "pages": [
+        "database/overview",
+        "setup/neon",
+        "database/schema",
+        "build/database"
+      ]
+    },
+    {
+      "group": "Email",
+      "pages": [
+        "setup/resend",
+        "build/email"
+      ]
+    },
+    {
+      "group": "Analytics",
+      "pages": [
+        "setup/posthog"
+      ]
+    },
+    {
+      "group": "AI Features",
+      "pages": [
+        "ai/overview",
+        "ai/providers",
+        "ai/rag",
+        "ai/agents"
+      ]
+    },
+    {
+      "group": "Customization",
+      "pages": [
+        "customize/branding",
+        "customize/theming",
+        "customize/components"
+      ]
+    },
+    {
+      "group": "Templates",
+      "pages": [
+        "templates/overview",
+        "templates/haveno",
+        "templates/socialhub",
+        "templates/agenix"
+      ]
+    },
+    {
+      "group": "Plugins",
+      "pages": [
+        "plugins/overview",
+        "plugins/feedback",
+        "plugins/waitlist",
+        "plugins/testimonials"
+      ]
+    },
+    {
+      "group": "Deployment",
+      "pages": [
+        "deploy/vercel",
+        "deploy/env-reference",
+        "deploy/custom-domain"
+      ]
+    },
+    {
+      "group": "AI IDEs",
+      "pages": [
+        "ai-tools/overview",
+        "ai-tools/claude-code",
+        "ai-tools/cursor",
+        "ai-tools/windsurf",
+        "ai-tools/antigravity",
+        "ai-tools/warp",
+        "ai-tools/cline",
+        "ai-tools/copilot",
+        "ai-tools/codex",
+        "ai-tools/slash-commands"
+      ]
+    },
+    {
+      "group": "Testing",
+      "pages": [
+        "testing/overview",
+        "testing/bdd",
+        "testing/stripe"
+      ]
+    },
+    {
+      "group": "Support",
+      "pages": [
+        "support/faq",
+        "support/updating"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/getlaunchkit",
+    "github": "https://github.com/CalebKing3/launchkit"
+  }
+}

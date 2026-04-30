@@ -1,0 +1,93 @@
+---
+description: Next.js App Router API route patterns for LaunchKit
+globs: ["apps/web/app/api/**"]
+alwaysApply: false
+---
+
+# API Route Patterns
+
+## Standard API route structure
+```typescript
+// @ts-nocheck
+import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
+
+// Input validation schema
+const CreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().optional(),
+});
+
+export async function GET(req: Request) {
+  const { userId, orgId } = await auth();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = Number(searchParams.get("page") ?? "1");
+    const limit = Math.min(Number(searchParams.get("limit") ?? "20"), 100);
+
+    // ... db query ...
+    return NextResponse.json({ data: rows, page, limit });
+  } catch (err) {
+    console.error("[API] GET error:", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const body = await req.json();
+    const parsed = CreateSchema.safeParse(body);
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+
+    // ... db insert ...
+    return NextResponse.json({ data: row }, { status: 201 });
+  } catch (err) {
+    console.error("[API] POST error:", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  }
+}
+```
+
+## Streaming AI responses
+```typescript
+import { streamText } from "ai";
+import { getModel } from "@/lib/ai";
+
+export async function POST(req: Request) {
+  const { userId } = await auth();
+  if (!userId) return new Response("Unauthorized", { status: 401 });
+
+  const { messages, modelId = "gpt-5.4-mini" } = await req.json();
+
+  const result = streamText({
+    model: getModel(modelId),
+    messages,
+    onFinish: async ({ usage }) => {
+      // Track usage in ai_usage table
+    },
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+## Public routes
+Add unauthenticated routes to `apps/web/middleware.ts`:
+```typescript
+publicRoutes: ["/api/webhooks/(.*)", "/api/leads", "/api/new-public-route"]
+```
+
+## Webhooks (no auth, use signature verification)
+```typescript
+export async function POST(req: Request) {
+  const body = await req.text();
+  const signature = req.headers.get("stripe-signature") ?? "";
+  // Verify with Stripe.webhooks.constructEvent(body, signature, secret)
+}
+```

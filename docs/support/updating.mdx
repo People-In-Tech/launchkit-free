@@ -1,0 +1,132 @@
+---
+title: Updating LaunchKit
+description: How to pull new LaunchKit versions into your project without breaking your customizations.
+---
+
+# Updating LaunchKit
+
+LaunchKit ships updates to the `main` branch of the private repo. All updates are free — pull whenever you want.
+
+<Note>
+  Check the [Changelog](https://getlaunchkit.app/changelog) before every update. Patch releases (`v1.0.x`) are safe to pull blindly. Minor releases (`v1.x.0`) may need a migration step. Major releases (`v2.0.0`) will always have a migration guide.
+</Note>
+
+---
+
+## Simple update (most of the time)
+
+If you haven't made changes to the core packages (`packages/*`) — just app-level changes to `apps/web/` — updates are usually conflict-free:
+
+```bash
+git pull origin main
+pnpm install          # in case new deps were added
+pnpm db:push          # in case the schema changed
+```
+
+Done. Restart your dev server.
+
+---
+
+## When you have customizations
+
+If you've modified files in `packages/` or changed core infrastructure files, you'll want to review the diff before merging.
+
+<Steps>
+
+### Add the upstream remote (first time only)
+
+```bash
+# If you cloned launchkit-pro, it's already your origin
+# No upstream needed — just pull from origin
+git pull origin main
+```
+
+### Check what changed
+
+Before pulling, see what's in the update:
+
+```bash
+git fetch origin
+git log HEAD..origin/main --oneline
+```
+
+This shows you every commit in the update without applying them yet.
+
+### Pull and resolve conflicts
+
+```bash
+git pull origin main
+```
+
+Git will flag any conflicts. Open them in your editor (look for `<<<<<<<` markers). For each conflict, decide:
+- **Keep your version** — your customization should win
+- **Keep their version** — the LaunchKit update should win
+- **Merge both** — take parts of each
+
+### Run the post-update checklist
+
+```bash
+pnpm install       # pick up any new packages
+pnpm db:push       # apply any schema changes
+pnpm typecheck     # make sure nothing broke
+pnpm dev           # verify the app starts
+```
+
+</Steps>
+
+---
+
+## What's safe to modify (low conflict risk)
+
+These are your customization zone — LaunchKit rarely touches them:
+
+```
+apps/web/app/          # your pages
+apps/web/components/   # your components (except shared/, auth/, dashboard/ core)
+packages/email/src/templates/  # your email templates
+packages/config/src/site.ts    # your app name, description, links
+packages/config/src/plans.ts   # your pricing plans
+docs/                  # your documentation
+```
+
+## What to be careful with (higher conflict risk)
+
+LaunchKit updates tend to touch these — try to minimize changes here, or keep your changes small and well-commented:
+
+```
+packages/database/src/schema/   # schema changes may conflict
+apps/web/middleware.ts           # auth logic updates
+apps/web/app/api/               # webhook/API improvements
+packages/analytics/             # adapter updates
+```
+
+---
+
+## Checking the schema for changes
+
+If the update includes database schema changes, the changelog will say so. Apply them:
+
+```bash
+pnpm db:push
+```
+
+If a migration requires data transformation (rare — only in major versions), the changelog will include a SQL migration snippet to run manually.
+
+---
+
+## Rolling back an update
+
+If something breaks after an update, roll back to the previous commit:
+
+```bash
+git log --oneline -10    # find the commit hash before the update
+git revert HEAD          # or:
+git reset --hard <hash>  # ⚠️ loses any uncommitted work
+```
+
+---
+
+## Staying informed
+
+- **[Changelog](https://getlaunchkit.app/changelog)** — every release with what changed
+- **Watch the repo** — in GitHub, click **Watch → Custom → Releases** to get email notifications when new versions ship

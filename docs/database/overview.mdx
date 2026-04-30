@@ -1,0 +1,89 @@
+---
+title: Database Overview
+description: "Neon serverless Postgres + Drizzle ORM + pgvector"
+---
+
+## Stack
+
+LaunchKit uses:
+- **[Neon](https://neon.tech)** — serverless Postgres with auto-scaling, branching, and pgvector
+- **[Drizzle ORM](https://orm.drizzle.team)** — type-safe, lightweight ORM
+- **pgvector** — vector embeddings for AI/RAG features
+
+## Schema Location
+
+All table definitions live in `packages/database/src/schema/`. After modifying schema, push changes with:
+
+```bash
+pnpm db:push
+```
+
+## Query Patterns
+
+```typescript
+import { db } from "@launchkit/database";
+import { users } from "@launchkit/database/schema/users";
+import { eq, and, desc } from "drizzle-orm";
+
+// Select
+const user = await db
+  .select()
+  .from(users)
+  .where(eq(users.id, userId))
+  .limit(1);
+
+// Insert
+const [newUser] = await db
+  .insert(users)
+  .values({ id: userId, email: "..." })
+  .returning();
+
+// Update
+await db
+  .update(users)
+  .set({ updatedAt: new Date() })
+  .where(eq(users.id, userId));
+
+// Delete
+await db.delete(users).where(eq(users.id, userId));
+```
+
+<Warning>
+  Always import from `@launchkit/database` in app code — never import from `drizzle-orm` directly. Direct imports cause dual-instance type conflicts. Add `// @ts-nocheck` to files with Drizzle imports if you see type errors.
+</Warning>
+
+## Adding a New Table
+
+1. Create `packages/database/src/schema/my-table.ts`
+2. Export it from `packages/database/src/schema/index.ts`
+3. Run `pnpm db:push`
+
+Example table:
+
+```typescript
+// packages/database/src/schema/my-table.ts
+import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+
+export const myTable = pgTable("my_table", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+```
+
+## Scaffold a Full Module
+
+Instead of manually creating schema + API + page, use the scaffold CLI:
+
+```bash
+node scripts/scaffold.mjs invoices
+# Creates: schema, API route, dashboard page, Table component, Form component
+```
+
+## Drizzle Studio
+
+```bash
+pnpm db:studio  # Opens a GUI to browse and edit your data
+```

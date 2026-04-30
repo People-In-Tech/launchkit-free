@@ -1,0 +1,83 @@
+---
+title: Environment Variables
+description: "Complete reference for all LaunchKit environment variables"
+---
+
+## Required Variables
+
+These must be set for the app to function:
+
+| Variable | Description | Where to get it |
+|---|---|---|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public key | [Clerk Dashboard → API Keys](https://dashboard.clerk.com) |
+| `CLERK_SECRET_KEY` | Clerk secret key | [Clerk Dashboard → API Keys](https://dashboard.clerk.com) |
+| `CLERK_WEBHOOK_SECRET` | Clerk webhook signing secret | Clerk Dashboard → Webhooks |
+| `DATABASE_URL` | Neon Postgres connection string | [Neon Console](https://console.neon.tech) |
+| `STRIPE_SECRET_KEY` | Stripe secret key | [Stripe Dashboard → API Keys](https://dashboard.stripe.com) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | Stripe Dashboard → API Keys |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | Stripe Dashboard → Webhooks |
+| `STRIPE_SOLO_PRICE_ID` | Price ID for $149 Solo plan | Stripe Dashboard → Products |
+| `STRIPE_TEAMS_PRICE_ID` | Price ID for $299 Teams plan | Stripe Dashboard → Products |
+| `RESEND_API_KEY` | Resend email API key | [Resend Dashboard](https://resend.com) |
+| `EMAIL_FROM` | Sender email (`Name <email@domain.com>`) | Your verified Resend domain |
+| `OPENAI_API_KEY` | OpenAI API key | [platform.openai.com](https://platform.openai.com) |
+| `NEXT_PUBLIC_APP_URL` | Your app's public URL | Your Vercel/custom domain |
+
+## Optional AI Providers
+
+Set any of these to enable additional AI models:
+
+| Variable | Provider | Models |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | Anthropic | Claude Sonnet, Opus |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Google Gemini | Gemini 3.1 Flash/Pro |
+| `PERPLEXITY_API_KEY` | Perplexity | Sonar models |
+| `XAI_API_KEY` | xAI | Grok 3 |
+| `DEEPSEEK_API_KEY` | DeepSeek | DeepSeek V3 |
+| `GROQ_API_KEY` | Groq | Llama, Mixtral |
+| `MISTRAL_API_KEY` | Mistral | Mistral Large |
+| `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` | AWS Bedrock | Claude, Llama via AWS |
+| `GOOGLE_VERTEX_PROJECT` | Google Vertex AI | Gemini via GCP |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI | GPT series via Azure |
+
+## Storage
+
+| Variable | Description |
+|---|---|
+| `STORAGE_PROVIDER` | `vercel-blob` \| `s3` \| `gcs` \| `azure-blob` \| `supabase` |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob token (if using Vercel Blob) |
+| `AWS_S3_BUCKET` | S3 bucket name (if using S3) |
+
+## Pro Template Access
+
+| Variable | Description |
+|---|---|
+| `LAUNCHKIT_GITHUB_TOKEN` | GitHub PAT to access the private pro repo |
+| `LAUNCHKIT_PRIVATE_REPO_SLUG` | `People-In-Tech/launchkit-pro` |
+
+## Example .env.local
+
+```bash
+# Core
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+CLERK_WEBHOOK_SECRET=whsec_...
+DATABASE_URL=postgresql://...
+STRIPE_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_SOLO_PRICE_ID=price_...
+STRIPE_TEAMS_PRICE_ID=price_...
+RESEND_API_KEY=re_...
+EMAIL_FROM=LaunchKit <hello@getlaunchkit.app>
+OPENAI_API_KEY=sk-...
+NEXT_PUBLIC_APP_URL=https://getlaunchkit.app
+
+# Storage
+STORAGE_PROVIDER=vercel-blob
+BLOB_READ_WRITE_TOKEN=vercel_blob_...
+
+# Pro access
+LAUNCHKIT_GITHUB_TOKEN=ghp_...
+LAUNCHKIT_PRIVATE_REPO_SLUG=People-In-Tech/launchkit-pro
+```

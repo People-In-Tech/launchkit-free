@@ -1,0 +1,140 @@
+---
+title: PostHog (Analytics)
+description: Set up product analytics with PostHog. Automatic user identity sync with Clerk.
+---
+
+# PostHog — Analytics
+
+<Info>**Setup time: ~1 minute** — Create a project, copy two env vars. Clerk identity sync is already wired in LaunchKit.</Info>
+
+LaunchKit uses [PostHog](https://posthog.com) for product analytics. It ships pre-wired with Clerk user identity sync — so every event is automatically tied to the signed-in user. No extra code needed.
+
+Free tier: 1 million events/month.
+
+<Steps>
+
+### Create a PostHog account
+
+Go to [posthog.com](https://posthog.com) and sign up. Choose **US** or **EU** hosting based on your compliance needs.
+
+### Get your project API key
+
+1. Go to **Project settings** (gear icon)
+2. Copy the **Project API Key** (starts with `phc_`)
+3. Copy the **Host** URL (e.g. `https://us.i.posthog.com`)
+
+```env
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+### (Optional) Server-side key
+
+For server-side PostHog calls (e.g. feature flags, server events):
+
+```env
+POSTHOG_API_KEY=phx_xxx
+```
+
+Find it in **Project settings → Personal API keys**.
+
+</Steps>
+
+---
+
+## What's Tracked Automatically
+
+LaunchKit includes a custom analytics adapter in `packages/analytics`. It automatically tracks:
+
+| Event | When |
+|---|---|
+| Pageviews | Every route change |
+| `pricing_view` | User visits `/pricing` |
+| `pricing_plan_click` | User clicks a plan CTA |
+| `checkout_started` | Stripe Checkout opens |
+| `exit_intent_shown` | Exit popup triggers |
+| `exit_intent_cta_click` | User clicks CTA in exit popup |
+
+And on user state changes:
+
+| Action | PostHog Effect |
+|---|---|
+| User signs in | `posthog.identify(userId, { email, name })` |
+| User signs out | `posthog.reset()` |
+| Org switches | `posthog.group('company', orgId)` |
+
+---
+
+## Tracking a Custom Event
+
+From any client component:
+
+```typescript
+import { useAnalytics } from "@/components/analytics-provider";
+
+function MyButton() {
+  const analytics = useAnalytics();
+
+  return (
+    <button onClick={() => analytics.capture("feature_used", { feature: "export" })}>
+      Export
+    </button>
+  );
+}
+```
+
+From a Server Action or Route Handler:
+
+```typescript
+import { PostHog } from "posthog-node";
+
+const client = new PostHog(process.env.POSTHOG_API_KEY!, {
+  host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+});
+
+client.capture({
+  distinctId: userId,
+  event: "purchase_completed",
+  properties: { plan: "solo", amount: 149 },
+});
+
+await client.flush();
+```
+
+---
+
+## Switching to Plausible
+
+If you prefer a privacy-first alternative, LaunchKit supports Plausible too:
+
+```env
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN=yourdomain.com
+```
+
+The analytics adapter auto-detects which provider is configured based on your env vars. No code changes needed.
+
+---
+
+## Environment Variables
+
+```env
+# Required
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+
+# Optional (server-side)
+POSTHOG_API_KEY=phx_xxx
+```
+
+---
+
+## What's Next
+
+<CardGroup cols={2}>
+  <Card title="Deploy to Vercel →" icon="cloud" href="/deploy/vercel">
+    You're ready. Go live in 3 minutes.
+  </Card>
+  <Card title="Customize branding →" icon="pen" href="/customize/branding">
+    Change the name, logo, and copy.
+  </Card>
+</CardGroup>

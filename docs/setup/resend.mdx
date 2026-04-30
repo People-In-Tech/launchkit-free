@@ -1,0 +1,141 @@
+---
+title: Resend (Email)
+description: Set up transactional email with Resend. 3,000 emails/month free.
+---
+
+# Resend — Email
+
+<Info>**Setup time: ~1 minute** — Create an account, copy an API key. Use `onboarding@resend.dev` locally so you don't need domain verification.</Info>
+
+LaunchKit uses [Resend](https://resend.com) for transactional email. The free tier gives you 3,000 emails/month — more than enough to get started.
+
+Emails are built with [React Email](https://react.email), so you can preview them in your browser as you edit them.
+
+<Steps>
+
+### Create a Resend account
+
+Go to [resend.com](https://resend.com) and sign up. No credit card required.
+
+### Create an API key
+
+1. Go to **API Keys → Add API key**
+2. Name it (e.g. `my-app-dev`)
+3. Set permissions to **Full access** (or sending only)
+4. Copy the key
+
+```env
+RESEND_API_KEY=re_xxx
+```
+
+### Set your sender address
+
+```env
+EMAIL_FROM=YourApp <hello@yourdomain.com>
+```
+
+<Warning>
+  You must verify your domain in Resend before sending from a custom email address. For development, use `onboarding@resend.dev` as your `EMAIL_FROM` — it works without domain verification.
+
+  ```env
+  # Development (no domain verification needed)
+  EMAIL_FROM=LaunchKit <onboarding@resend.dev>
+  ```
+</Warning>
+
+### Verify your domain (production)
+
+1. Go to **Domains → Add domain**
+2. Enter your domain (e.g. `yourdomain.com`)
+3. Add the DNS records Resend provides (MX, SPF, DKIM)
+4. Click **Verify** once DNS propagates (usually a few minutes)
+
+</Steps>
+
+---
+
+## Preview Email Templates
+
+LaunchKit ships with pre-built React Email templates. Preview them in your browser:
+
+```bash
+pnpm dev
+# then open:
+# http://localhost:3000/email-preview
+```
+
+Or run the React Email dev server directly:
+
+```bash
+pnpm email:dev
+# Opens at http://localhost:3002
+```
+
+---
+
+## Included Templates
+
+| Template | Trigger | File |
+|---|---|---|
+| Welcome | User signs up | `packages/email/src/templates/welcome.tsx` |
+| Team Invite | Org member invited | `packages/email/src/templates/team-invite.tsx` |
+| Purchase Confirmation | Stripe payment succeeds | `packages/email/src/templates/purchase.tsx` |
+
+---
+
+## Adding a New Email Template
+
+```tsx
+// packages/email/src/templates/my-email.tsx
+import { Html, Body, Heading, Text, Button } from "@react-email/components";
+
+export function MyEmail({ name, url }: { name: string; url: string }) {
+  return (
+    <Html>
+      <Body>
+        <Heading>Hey {name} 👋</Heading>
+        <Text>Click the button below to get started.</Text>
+        <Button href={url}>Get Started</Button>
+      </Body>
+    </Html>
+  );
+}
+```
+
+Send it from any Server Action or Route Handler:
+
+```typescript
+import { Resend } from "resend";
+import { MyEmail } from "@launchkit/email";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+await resend.emails.send({
+  from: process.env.EMAIL_FROM!,
+  to: user.email,
+  subject: "Welcome!",
+  react: MyEmail({ name: user.firstName, url: "https://..." }),
+});
+```
+
+---
+
+## Environment Variables
+
+```env
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=YourApp <hello@yourdomain.com>
+```
+
+---
+
+## What's Next
+
+<CardGroup cols={2}>
+  <Card title="PostHog setup →" icon="chart-line" href="/setup/posthog">
+    Set up analytics. Takes ~1 minute.
+  </Card>
+  <Card title="Email reference →" icon="envelope" href="/build/email">
+    Learn how to add and customize email templates.
+  </Card>
+</CardGroup>

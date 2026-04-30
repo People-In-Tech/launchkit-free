@@ -1,0 +1,12 @@
+{
+  "framework": "nextjs",
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm build --filter @launchkit/web",
+  "regions": ["iad1", "sfo1", "lhr1"],
+  "crons": [
+    {
+      "path": "/api/cron/leads-sequence",
+      "schedule": "0 14 * * *"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@launchkit/email",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@react-email/components": "^0.0.34",
+    "react": "^19.0.0",
+    "resend": "^4.5.0"
+  },
+  "devDependencies": {
+    "@launchkit/tsconfig": "workspace:*",
+    "@types/react": "^19.0.0"
+  }
+}

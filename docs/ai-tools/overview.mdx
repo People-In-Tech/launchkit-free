@@ -1,0 +1,120 @@
+---
+title: AI Tools Overview
+description: LaunchKit is built for vibe coders — your AI has full context before writing a single line.
+---
+
+# AI Tools
+
+Most SaaS boilerplates ignore the AI. LaunchKit is built specifically for developers who code with Claude Code and Cursor. Four files give your AI everything it needs — stack, patterns, schema, conventions — before it writes a single line of code.
+
+---
+
+## The four files
+
+### `CLAUDE.md`
+
+Loaded automatically by Claude Code when you open the project. Covers:
+- Monorepo structure and how packages relate
+- The exact Drizzle query patterns to use (and what to avoid)
+- Component conventions: Server Components vs Client Components, when to use each
+- Styling rules: Tailwind + shadcn/ui only, no custom CSS
+- Hard rules: no `any` types, no raw SQL, always validate with Zod
+
+Claude reads this on startup. You don't have to explain any of this yourself.
+
+### `.cursorrules`
+
+The Cursor IDE equivalent of `CLAUDE.md`. Same content, formatted for Cursor's context loading. Open any file in Cursor and it has full project context automatically.
+
+### `AGENTS.md`
+
+600+ line architecture reference. The most detailed of the four. Covers:
+- Where every important file lives and why
+- The full database schema with relationships
+- How auth flows from Clerk → middleware → database
+- How billing flows from Stripe → webhook → database
+- How to add a new feature correctly end-to-end
+- Common mistakes and how to avoid them
+
+**Use this for complex tasks.** Start your prompt with *"Read AGENTS.md first, then..."*
+
+---
+
+## The right way to use your AI
+
+<CardGroup cols={2}>
+  <Card title="For simple tasks" icon="bolt">
+    Point at an existing file and say what you want.
+
+    *"Look at `apps/web/app/api/billing/checkout/route.ts` and create a similar route for one-time add-on purchases."*
+  </Card>
+  <Card title="For complex tasks" icon="brain">
+    Start with AGENTS.md to load full context.
+
+    *"Read AGENTS.md first. Then add a complete feedback system with a database table, API route, dashboard page, and email notification."*
+  </Card>
+</CardGroup>
+
+---
+
+## Copy-paste prompts
+
+**New feature from scratch:**
+```
+Read AGENTS.md before starting.
+
+I want to add [feature name]. Here's what it needs to do:
+- [requirement 1]
+- [requirement 2]
+- [requirement 3]
+
+Start by creating the database table in packages/database/src/schema/,
+then push the schema with pnpm db:push, then build the feature.
+```
+
+**Adding a new page:**
+```
+Add a dashboard page at /dashboard/[slug] that shows [description].
+Follow the exact same structure as apps/web/app/dashboard/page.tsx.
+Use Server Components for data fetching. If there's a form, use a Server Action.
+```
+
+**Debugging an error:**
+```
+I'm getting this error: [paste error]
+
+The relevant files are:
+- [file 1 path]
+- [file 2 path]
+
+Don't change anything else. Just fix this specific issue.
+```
+
+**Customizing the design:**
+```
+Update apps/web/app/globals.css to change the primary color to [hex color].
+Convert it to HSL format. Update both :root and .dark sections.
+Don't change anything else.
+```
+
+---
+
+## Setup guides
+
+<CardGroup cols={2}>
+  <Card title="Claude Code" icon="terminal" href="/ai-tools/claude-code">
+    Setup and best prompts.
+  </Card>
+  <Card title="Cursor" icon="mouse-pointer" href="/ai-tools/cursor">
+    .cursorrules setup and workflow tips.
+  </Card>
+  <Card title="Slash Commands" icon="slash" href="/ai-tools/slash-commands">
+    Generate full modules with one command.
+  </Card>
+</CardGroup>
+
+---
+
+<Tip>
+  **The #1 tip**: Always say *"Read AGENTS.md before starting"* at the beginning of complex tasks. This single instruction cuts AI errors by ~80% because Claude understands your exact patterns and won't invent new ones.
+</Tip>

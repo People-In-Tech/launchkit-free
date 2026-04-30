@@ -1,0 +1,83 @@
+---
+title: Deploy to Vercel
+description: "Production deployment guide for LaunchKit on Vercel"
+---
+
+## Recommended Setup
+
+LaunchKit is optimized for [Vercel](https://vercel.com). It uses serverless functions, edge middleware, and Vercel Blob for file storage.
+
+## Deploy via CLI
+
+```bash
+npm i -g vercel
+vercel deploy --prod
+```
+
+When prompted:
+- **Root directory**: `apps/web`
+- **Build command**: `cd ../.. && npx turbo build --filter=@launchkit/web`
+- **Output directory**: `.next`
+
+## Deploy via GitHub Integration
+
+1. Push to GitHub
+2. Import at [vercel.com/new](https://vercel.com/new)
+3. Set **Root Directory** to `apps/web`
+4. Add environment variables
+5. Deploy
+
+## Environment Variables
+
+In **Vercel Dashboard → Settings → Environment Variables**, add:
+
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+CLERK_SECRET_KEY
+CLERK_WEBHOOK_SECRET
+DATABASE_URL
+STRIPE_SECRET_KEY
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+STRIPE_WEBHOOK_SECRET
+STRIPE_SOLO_PRICE_ID
+STRIPE_TEAMS_PRICE_ID
+RESEND_API_KEY
+EMAIL_FROM
+OPENAI_API_KEY
+NEXT_PUBLIC_APP_URL
+LAUNCHKIT_GITHUB_TOKEN
+LAUNCHKIT_PRIVATE_REPO_SLUG
+```
+
+<Tip>
+  Set environment variables for **Production**, **Preview**, and **Development** separately. Use test keys for Preview/Development and live keys only for Production.
+</Tip>
+
+## Build Command
+
+LaunchKit uses Turborepo. Vercel detects this automatically, but if you need to specify manually:
+
+```bash
+cd ../.. && npx turbo build --filter=@launchkit/web
+```
+
+## Continuous Deployment
+
+Every push to `main` triggers a production deploy automatically:
+
+```bash
+git add -A && git commit -m "feat: your feature"
+git push origin main
+# → Vercel deploys in ~60 seconds
+```
+
+PRs automatically get preview deployments at `your-branch.vercel.app`.
+
+## Custom Domain
+
+1. **Vercel Dashboard → Domains** → Add domain
+2. Add DNS records at your registrar:
+   - `A` record: `76.76.21.21`
+   - or `CNAME`: `cname.vercel-dns.com`
+3. Update `NEXT_PUBLIC_APP_URL` to your new domain
+4. Update Stripe and Clerk webhook URLs to use your new domain

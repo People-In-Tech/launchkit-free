@@ -1,0 +1,31 @@
+{
+  "name": "@launchkit/jobs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Trigger.dev background jobs for LaunchKit — emails, billing sync, AI processing",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "dev": "echo '[@launchkit/jobs] skipping — run `pnpm trigger:dev` after configuring Trigger.dev (requires @trigger.dev/cli + TRIGGER_SECRET_KEY)'",
+    "trigger:dev": "trigger dev",
+    "deploy": "trigger deploy",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@launchkit/database": "workspace:*",
+    "@launchkit/email": "workspace:*",
+    "@trigger.dev/sdk": "^3.3.0",
+    "drizzle-orm": "^0.44.0"
+  },
+  "devDependencies": {
+    "@launchkit/tsconfig": "workspace:*",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0"
+  }
+}

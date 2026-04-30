@@ -1,0 +1,102 @@
+---
+title: AI Overview
+description: "11 AI providers, streaming chat, image generation, RAG, and agents"
+---
+
+## AI Provider Factory
+
+LaunchKit uses the [Vercel AI SDK](https://sdk.vercel.ai) with a custom provider factory at `apps/web/lib/ai.ts`. Use it for all AI calls — never instantiate providers directly.
+
+```typescript
+import { getModel } from "@/lib/ai";
+
+// Default (GPT-5.4 mini)
+const model = getModel();
+
+// Specific models
+const model = getModel("gpt-5.4-mini");
+const model = getModel("claude-sonnet-4-6");
+const model = getModel("gemini-3.1-flash");
+const model = getModel("grok-3");
+const model = getModel("deepseek-v3");
+```
+
+## Supported Providers
+
+| Provider | Models | Env Var |
+|---|---|---|
+| OpenAI | GPT-5.4, GPT-5.4 mini | `OPENAI_API_KEY` |
+| Anthropic | Claude Sonnet, Opus | `ANTHROPIC_API_KEY` |
+| Google | Gemini 3.1 Flash/Pro | `GOOGLE_GENERATIVE_AI_API_KEY` |
+| xAI | Grok 3 | `XAI_API_KEY` |
+| DeepSeek | DeepSeek V3 | `DEEPSEEK_API_KEY` |
+| Groq | Llama, Mixtral | `GROQ_API_KEY` |
+| Mistral | Mistral Large | `MISTRAL_API_KEY` |
+| Perplexity | Sonar | `PERPLEXITY_API_KEY` |
+| AWS Bedrock | Claude, Llama | `AWS_ACCESS_KEY_ID` |
+| Google Vertex | Gemini | `GOOGLE_VERTEX_PROJECT` |
+| Azure OpenAI | GPT series | `AZURE_OPENAI_API_KEY` |
+
+## Streaming Chat
+
+The AI chat API is at `apps/web/app/api/ai/chat/route.ts`. It uses the Vercel AI SDK's streaming pattern:
+
+```typescript
+import { streamText } from "ai";
+import { getModel } from "@/lib/ai";
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  
+  const result = streamText({
+    model: getModel(),
+    messages,
+    system: "You are a helpful assistant.",
+  });
+  
+  return result.toDataStreamResponse();
+}
+```
+
+## RAG (Retrieval-Augmented Generation)
+
+```typescript
+import { embedAndStore, searchSimilar } from "@launchkit/rag";
+
+// Store a document
+await embedAndStore({
+  id: "doc-1",
+  content: "Your document content here...",
+  metadata: { source: "knowledge-base" },
+});
+
+// Retrieve relevant context
+const docs = await searchSimilar("user's query", { k: 5 });
+```
+
+## AI Agents
+
+```typescript
+import { createAgent } from "@launchkit/agents";
+
+const agent = createAgent({
+  tools: ["search", "db", "code"],
+  memory: true,  // uses pgvector for persistent memory
+});
+
+const stream = await agent.stream("Scaffold a products module");
+```
+
+## Credit System
+
+All AI operations are gated by a credit balance (not raw token metering):
+
+```typescript
+import { deductCredits } from "@/lib/credits";
+
+// Deduct before making AI call
+const success = await deductCredits(userId, 10);
+if (!success) throw new Error("Insufficient credits");
+```
+
+Users start with 100 free credits. Paid plans grant 5,000–25,000 credits/month.

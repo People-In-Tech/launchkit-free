@@ -1,0 +1,64 @@
+---
+title: SocialHub — Social Media SaaS Template
+description: A social media management tool starter built on LaunchKit. Schedule posts, track analytics, manage multiple accounts.
+---
+
+<Warning>
+  Pro tier only. Included in the **Teams** plan or available as a standalone add-on.
+</Warning>
+
+## Overview
+
+SocialHub is a social media management SaaS template — schedule posts, analyze performance, and manage multiple brand accounts. Think Buffer or Hypefury, but you own the code.
+
+## What's Included
+
+- **Multi-account management** — connect multiple Twitter/X, LinkedIn, and Instagram accounts per workspace
+- **Post composer** — rich text with media uploads (stored in Vercel Blob)
+- **Scheduling queue** — cron-based queue for scheduled posts
+- **Analytics dashboard** — impressions, clicks, engagement rate per account
+- **Team workspaces** — invite teammates, assign roles (admin, editor, viewer)
+- **Approval flow** — optional post approval before publishing
+
+## Database Schema
+
+```ts
+socialAccounts, posts, postSchedules, postAnalytics
+```
+
+## Getting Started
+
+```bash
+npx create-launchkit@latest my-social-tool --template socialhub
+```
+
+## OAuth Setup
+
+SocialHub uses OAuth to connect social accounts. Each provider needs its own OAuth app:
+
+| Provider | Env Var |
+|----------|---------|
+| Twitter/X | `TWITTER_CLIENT_ID` + `TWITTER_CLIENT_SECRET` |
+| LinkedIn | `LINKEDIN_CLIENT_ID` + `LINKEDIN_CLIENT_SECRET` |
+
+Add these to `.env.local` after creating OAuth apps on each platform.
+
+## Scheduling
+
+Posts are scheduled via Vercel Cron (defined in `vercel.json`). The cron fires every 5 minutes and publishes queued posts:
+
+```json
+{
+  "crons": [{ "path": "/api/cron/publish-posts", "schedule": "*/5 * * * *" }]
+}
+```
+
+## Key Files
+
+| Path | Description |
+|------|-------------|
+| `apps/web/app/(app)/accounts/` | Social account management |
+| `apps/web/app/(app)/compose/` | Post composer |
+| `apps/web/app/(app)/schedule/` | Scheduling calendar |
+| `apps/web/app/api/cron/` | Publishing cron handler |
+| `packages/database/src/schema/posts.ts` | Post + schedule schema |

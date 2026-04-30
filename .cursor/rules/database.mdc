@@ -1,0 +1,86 @@
+---
+description: Drizzle ORM + Neon database patterns for LaunchKit
+globs: ["packages/database/**", "**/schema/**", "**/api/**"]
+alwaysApply: false
+---
+
+# Database Patterns (Drizzle + Neon)
+
+## Schema definitions
+Always create schemas in `packages/database/src/schema/<name>.ts`:
+
+```typescript
+// @ts-nocheck
+import { pgTable, text, uuid, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+
+export const items = pgTable("items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(),           // Clerk user ID
+  orgId: text("org_id"),                        // Clerk org ID (for teams)
+  name: text("name").notNull(),
+  isPublic: boolean("is_public").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type Item = typeof items.$inferSelect;
+export type NewItem = typeof items.$inferInsert;
+```
+
+Export from `packages/database/src/schema/index.ts`:
+```typescript
+export * from "./items";
+```
+
+## Queries
+```typescript
+import { db } from "@launchkit/database";
+import { items } from "@launchkit/database/schema";
+import { eq, and, desc, ilike } from "drizzle-orm";
+
+// Select
+const rows = await db.select().from(items).where(eq(items.userId, userId)).orderBy(desc(items.createdAt));
+
+// Insert + return
+const [row] = await db.insert(items).values({ userId, name }).returning();
+
+// Update
+await db.update(items).set({ name: "new" }).where(and(eq(items.id, id), eq(items.userId, userId)));
+
+// Delete
+await db.delete(items).where(eq(items.id, id));
+
+// Search (case-insensitive)
+const results = await db.select().from(items).where(ilike(items.name, `%${query}%`));
+```
+
+## Vector/RAG queries (pgvector)
+```typescript
+import { sql } from "drizzle-orm";
+
+// Cosine similarity search
+const similar = await db.execute(sql`
+  SELECT id, content, metadata,
+    1 - (embedding <=> ${embedding}::vector) AS similarity
+  FROM documents
+  ORDER BY embedding <=> ${embedding}::vector
+  LIMIT ${k}
+`);
+```
+
+## Apply schema
+```bash
+pnpm db:push         # Push changes to Neon
+pnpm db:studio       # Open Drizzle Studio (browser UI)
+pnpm db:generate     # Generate migration files
+```
+
+## Multi-tenant pattern
+Always scope queries by `userId` OR `orgId` (for team resources):
+```typescript
+const { userId, orgId } = await auth();
+// Personal resource
+.where(eq(items.userId, userId))
+// Team resource (falls back to personal)
+.where(orgId ? eq(items.orgId, orgId) : eq(items.userId, userId))
+```

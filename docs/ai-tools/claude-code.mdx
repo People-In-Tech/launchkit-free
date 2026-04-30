@@ -1,0 +1,121 @@
+---
+title: Claude Code
+description: Using Claude Code with LaunchKit — setup, context loading, and best prompts.
+---
+
+# Claude Code
+
+LaunchKit is pre-optimized for [Claude Code](https://claude.ai/code). `CLAUDE.md` is automatically loaded when you open Claude Code in the project directory.
+
+---
+
+## Setup
+
+```bash
+# Install Claude Code (requires Claude Pro or Max)
+npm install -g @anthropic-ai/claude-code
+
+# Open in your project
+cd my-app
+claude
+```
+
+Claude immediately loads `CLAUDE.md` and understands your stack.
+
+---
+
+
+
+## Best Prompts for LaunchKit
+
+<AccordionGroup>
+  <Accordion title="Adding a new feature">
+    ```
+    Read AGENTS.md before starting.
+
+    I want to add [feature name]. It should:
+    - [requirement 1]
+    - [requirement 2]
+
+    Follow the existing patterns in [similar file path].
+    Use Server Actions for mutations, Server Components for data fetching.
+    ```
+  </Accordion>
+
+  <Accordion title="Adding a new database table">
+    ```
+    Add a new Drizzle table called `feedback` with these columns:
+    - id (cuid, primary key)
+    - userId (text, FK to users.id)
+    - message (text)
+    - rating (integer 1-5)
+    - createdAt (timestamp, defaultNow)
+
+    Follow the pattern in packages/database/src/schema/users.ts.
+    Export it from packages/database/src/schema/index.ts.
+    Then run pnpm db:push.
+    ```
+  </Accordion>
+
+  <Accordion title="Adding a new API route">
+    ```
+    Create a new Route Handler at apps/web/app/api/feedback/route.ts.
+
+    POST handler that:
+    1. Gets userId from auth()
+    2. Validates the request body with Zod
+    3. Inserts into the feedback table using Drizzle
+    4. Returns { success: true }
+
+    Follow the pattern in apps/web/app/api/billing/checkout/route.ts.
+    ```
+  </Accordion>
+
+  <Accordion title="Sending an email">
+    ```
+    Create a React Email template at packages/email/src/templates/feedback-received.tsx.
+
+    It should:
+    - Thank the user for their feedback
+    - Show their message and rating
+    - Have a button linking to the admin dashboard
+
+    Export it from packages/email/src/index.ts.
+    Then send it from the /api/feedback POST handler using Resend.
+    ```
+  </Accordion>
+
+  <Accordion title="Adding a settings page">
+    ```
+    Add a new settings page at apps/web/app/settings/notifications/page.tsx.
+
+    It should:
+    - Be a Server Component
+    - Show notification preference toggles (email, browser)
+    - Use a Server Action to save preferences
+    - Follow the same layout as apps/web/app/settings/profile/page.tsx
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Slash Commands
+
+LaunchKit ships with custom Claude slash commands. See the [Slash Commands reference →](/ai-tools/slash-commands)
+
+---
+
+## Tips
+
+<Tip>
+  Always say "Read AGENTS.md before starting" for complex tasks. This alone cuts hallucinations by ~80% because Claude understands your exact patterns.
+</Tip>
+
+<Tip>
+  Reference existing files by path. Claude Code can read your actual code — so pointing it to `apps/web/app/api/billing/checkout/route.ts` is better than describing the pattern from scratch.
+</Tip>
+
+<Warning>
+  Never let Claude generate raw SQL. Always use Drizzle query builder. The `.cursorrules` and `CLAUDE.md` files tell it this — but reinforce if needed.
+</Warning>

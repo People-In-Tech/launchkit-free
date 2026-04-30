@@ -1,0 +1,78 @@
+---
+title: Stripe Setup
+description: "Configure Stripe products, prices, webhooks, and inclusive tax"
+---
+
+## 1. Create Products and Prices
+
+In your [Stripe Dashboard](https://dashboard.stripe.com) → Products → Add product:
+
+**Solo Plan**
+- Name: LaunchKit Solo
+- Price: $149 USD one-time
+- Enable: "Include tax in price" (inclusive tax)
+
+**Teams Plan**
+- Name: LaunchKit Teams
+- Price: $299 USD one-time
+- Enable: "Include tax in price" (inclusive tax)
+
+Copy both Price IDs (starting with `price_`) to your env:
+
+```bash
+STRIPE_SOLO_PRICE_ID=price_...
+STRIPE_TEAMS_PRICE_ID=price_...
+```
+
+## 2. Configure Webhooks
+
+1. Go to **Stripe Dashboard → Developers → Webhooks**
+2. Add endpoint: `https://yourdomain.com/api/webhooks/stripe`
+3. Subscribe to:
+   - `checkout.session.completed`
+   - `checkout.session.expired`
+   - `payment_intent.payment_failed`
+4. Copy the **Signing Secret** to your env:
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+## 3. Test with Stripe CLI
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Forward webhooks to local dev
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+
+# Test a checkout
+stripe trigger checkout.session.completed
+```
+
+Use test card: `4242 4242 4242 4242` (any future exp, any CVC)
+
+## 4. Apple Pay / Google Pay
+
+These are **enabled automatically** by Stripe Checkout. No extra configuration needed. As long as the user's device/browser supports it, they'll see the Apple Pay or Google Pay button.
+
+## 5. Inclusive Tax
+
+LaunchKit is configured for **tax-inclusive pricing** — the user always pays exactly $149 or $299, tax included. To enable this in Stripe:
+
+1. Go to **Stripe Dashboard → Tax**
+2. Enable Stripe Tax
+3. On each price, check "Include tax in price"
+
+This prevents price shock at checkout and simplifies your pricing page copy.
+
+## Environment Variables Summary
+
+```bash
+STRIPE_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_SOLO_PRICE_ID=price_...
+STRIPE_TEAMS_PRICE_ID=price_...
+```

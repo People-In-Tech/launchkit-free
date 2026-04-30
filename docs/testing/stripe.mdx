@@ -1,0 +1,103 @@
+---
+title: Stripe Testing
+description: Test the full purchase flow end-to-end using Stripe test mode, test cards, and the Stripe CLI.
+---
+
+## Test Cards
+
+Use these in Stripe Checkout when in test mode (`pk_test_...`):
+
+| Card Number | Behavior |
+|-------------|----------|
+| `4242 4242 4242 4242` | Successful payment |
+| `4000 0025 0000 3155` | 3D Secure required |
+| `4000 0000 0000 9995` | Card declined (insufficient funds) |
+| `4000 0000 0000 0002` | Card declined (generic) |
+
+For all test cards: any future expiry (e.g., `12/34`), any 3-digit CVC, any ZIP.
+
+## Environment Setup
+
+Use your Stripe test keys (not live) for local testing:
+
+```bash
+# apps/web/.env.local
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...   # from Stripe CLI (see below)
+```
+
+## Stripe CLI for Webhooks
+
+The Stripe CLI forwards webhook events to your local server:
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Login
+stripe login
+
+# Forward events to your local webhook endpoint
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+The CLI prints a webhook signing secret (`whsec_...`) — set that as `STRIPE_WEBHOOK_SECRET` in `.env.local`.
+
+## Triggering Test Events
+
+Trigger specific Stripe events without completing a real checkout:
+
+```bash
+# Successful payment
+stripe trigger checkout.session.completed
+
+# Payment failed
+stripe trigger payment_intent.payment_failed
+
+# Subscription cancelled
+stripe trigger customer.subscription.deleted
+```
+
+## Full Purchase Flow Test
+
+1. Start the dev server: `pnpm dev`
+2. Start Stripe CLI: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+3. Go to `localhost:3000/pricing`
+4. Click **Get Solo** → redirects to Stripe Checkout
+5. Enter test card `4242 4242 4242 4242`
+6. Complete checkout → webhook fires → user gets access
+
+Verify in the Stripe CLI output that `checkout.session.completed` was received and your handler returned `200`.
+
+## BDD Checkout Tests
+
+Run the automated checkout test suite:
+
+```bash
+# Set up test env first
+cp apps/web/e2e/.env.test.example apps/web/e2e/.env.test
+# Fill in STRIPE_TEST_CARD, TEST_USER_EMAIL, TEST_USER_PASSWORD
+
+pnpm test:bdd:checkout
+```
+
+## Verifying Webhook Delivery
+
+Check the Stripe dashboard → **Developers → Webhooks → [your endpoint] → Recent deliveries** to see all events and their response codes.
+
+Your handler at `app/api/webhooks/stripe/route.ts` should:
+
+1. Verify the signature with `stripe.webhooks.constructEvent()`
+2. Handle `checkout.session.completed` → grant access
+3. Return `200` within 30 seconds
+
+## Production Checklist
+
+Before going live:
+
+- [ ] Switch to live Stripe keys in Vercel env vars
+- [ ] Verify the live webhook endpoint is registered at `https://getlaunchkit.app/api/webhooks/stripe`
+- [ ] Test with a real $1 purchase (refund immediately)
+- [ ] Confirm the webhook delivers and returns `200`
+- [ ] Check the buyer receives the confirmation email

@@ -1,0 +1,14 @@
+{
+  "name": "feedback",
+  "description": "User feedback collection with voting and status management",
+  "version": "1.0.0",
+  "files": [
+    { "src": "components/feedback-widget.tsx", "dest": "components/plugins/feedback/feedback-widget.tsx" },
+    { "src": "components/feedback-board.tsx", "dest": "components/plugins/feedback/feedback-board.tsx" },
+    { "src": "components/feedback-admin.tsx", "dest": "components/plugins/feedback/feedback-admin.tsx" },
+    { "src": "api/route.ts", "dest": "app/api/feedback/route.ts" },
+    { "src": "pages/feedback-page.tsx", "dest": "app/(marketing)/feedback/page.tsx" }
+  ],
+  "schema": "schema.ts",
+  "dependencies": []
+}

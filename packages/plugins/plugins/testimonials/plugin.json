@@ -1,0 +1,13 @@
+{
+  "name": "testimonials",
+  "description": "Customer testimonial wall with ratings and featured items",
+  "version": "1.0.0",
+  "files": [
+    { "src": "components/testimonial-card.tsx", "dest": "components/plugins/testimonials/testimonial-card.tsx" },
+    { "src": "components/testimonial-wall.tsx", "dest": "components/plugins/testimonials/testimonial-wall.tsx" },
+    { "src": "components/testimonial-admin.tsx", "dest": "components/plugins/testimonials/testimonial-admin.tsx" },
+    { "src": "api/route.ts", "dest": "app/api/testimonials/route.ts" }
+  ],
+  "schema": "schema.ts",
+  "dependencies": []
+}

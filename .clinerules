@@ -1,0 +1,108 @@
+# LaunchKit — Cline Rules
+
+You are an expert working on **LaunchKit** — a Next.js 15 SaaS boilerplate.
+Live at https://getlaunchkit.app · Business: People In Tech LLC · Support: hello@peopleintech.io
+
+## Stack
+
+| Layer | Tool | Notes |
+|-------|------|-------|
+| Framework | Next.js 15 App Router | TypeScript strict, Server Components default |
+| Database | Neon or Supabase + Drizzle ORM | User picks at CLI setup |
+| Auth | Clerk | Multi-tenant, orgs, webhooks — only provider |
+| Billing | Stripe | One-time purchase, Apple Pay + Google Pay via Checkout |
+| AI | Vercel AI SDK | 11 providers, all routed through `getModel()` in `lib/ai.ts` |
+| UI | Tailwind CSS + shadcn/ui | Radix primitives underneath |
+| Email | React Email + Resend | 3k/month free tier |
+| Monorepo | Turborepo + pnpm | `apps/web` = main app, `packages/*` = shared libs |
+
+## Non-Negotiable Rules
+
+1. **`// @ts-nocheck` on every file that imports from `@launchkit/database`** — Drizzle has a dual-instance type conflict in monorepos. This is expected and intentional.
+
+2. **Server Components are the default.** Add `"use client"` only when you need React hooks, browser APIs, or cannot replace something with Server Actions.
+
+3. **Never instantiate AI providers directly.** Always use `getModel(modelId)` from `@/lib/ai`.
+
+4. **Every API route must call `auth()` from Clerk first.** No exceptions for protected resources.
+
+5. **Public routes must be added to `publicRoutes[]` in `apps/web/middleware.ts`.** Forgetting this creates redirect loops.
+
+6. **Use `@launchkit/storage` for all file storage** — never raw `fs`, `S3Client`, or Vercel Blob directly.
+
+## Code Patterns
+
+### API Route (protected)
+```typescript
+import { auth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { db } from "@launchkit/database"; // @ts-nocheck at top of file
+
+export async function GET() {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const data = await db.select()...
+  return NextResponse.json(data);
+}
+```
+
+### AI Streaming
+```typescript
+import { streamText } from "ai";
+import { getModel } from "@/lib/ai";
+
+const result = streamText({
+  model: getModel("gpt-5.4-mini"),  // or claude-sonnet-4-6, gemini-2.0-flash, etc.
+  messages,
+});
+return result.toDataStreamResponse();
+```
+
+### Email
+```typescript
+import { sendEmail, PurchaseConfirmationEmail } from "@launchkit/email";
+await sendEmail({
+  to: email,
+  subject: "Your order is confirmed",
+  react: PurchaseConfirmationEmail({ firstName, plan }),
+});
+```
+
+### Server Component page
+```typescript
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
+export default async function DashboardPage() {
+  const { userId } = await auth();
+  if (!userId) redirect("/auth/sign-in");
+  return <div>...</div>;
+}
+```
+
+## Common Tasks
+
+### Add a DB table
+1. Create `packages/database/src/schema/<name>.ts`
+2. Export from `packages/database/src/schema/index.ts`
+3. Run `pnpm db:push`
+
+### Add an email template
+1. Create `packages/email/src/templates/<name>.tsx` using React Email
+2. Export from `packages/email/src/index.ts`
+3. Import via `import { MyEmail } from "@launchkit/email"`
+
+### Add a dashboard page
+1. `apps/web/app/dashboard/<name>/page.tsx`
+2. Add to sidebar: `apps/web/components/dashboard/sidebar.tsx`
+
+### Scaffold a CRUD module
+```bash
+node scripts/scaffold.mjs <module-name>
+```
+
+## What Was Removed (do not add back)
+- ~~Lemon Squeezy~~ — Stripe only
+- ~~Trigger.dev~~ — use Vercel cron (`/api/cron/*`) instead
+- ~~Firebase~~ — Neon or Supabase only
+- ~~NextAuth~~ — Clerk only

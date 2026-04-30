@@ -1,0 +1,155 @@
+---
+title: Clerk (Auth)
+description: Set up authentication, organizations, and social login with Clerk.
+---
+
+# Clerk — Authentication
+
+<Info>**Setup time: ~3 minutes** — The webhook step is the most important. Don't skip it.</Info>
+
+[Clerk](https://clerk.com) handles all auth in LaunchKit — sign-in/sign-up pages, social providers, MFA, multi-tenant organizations, and user sync. Free tier is generous.
+
+<Steps>
+
+### Create a Clerk account
+
+Go to [clerk.com](https://clerk.com) and sign up.
+
+### Create an application
+
+1. Click **Create application**
+2. Enter your app name
+3. Enable the sign-in methods you want (Email, Google, and GitHub are recommended)
+4. Click **Create application**
+
+### Enable Organizations
+
+<Warning>
+  This step is critical. LaunchKit's multi-tenancy is built on Clerk organizations. If you skip this, team features won't work.
+</Warning>
+
+1. In the Clerk dashboard, go to **Configure → Organizations**
+2. Toggle **Enable organizations** to ON
+3. Set "Users can create organizations" to enabled
+4. Save
+
+### Copy your API keys
+
+Go to **Configure → API Keys** and copy:
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx
+CLERK_SECRET_KEY=sk_test_xxx
+```
+
+### Set redirect URLs
+
+```env
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/auth/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/auth/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/portal
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/portal
+```
+
+### Set up the webhook
+
+Clerk uses webhooks to sync user and organization events to your database.
+
+1. Go to **Configure → Webhooks** → **Add Endpoint**
+2. **For local development**, use a tunnel URL:
+
+<CodeGroup>
+```bash ngrok
+ngrok http 3000
+# Endpoint: https://abc123.ngrok.io/api/webhooks/clerk
+```
+
+```bash Cloudflare Tunnel
+cloudflared tunnel --url http://localhost:3000
+# Endpoint: https://xxx.trycloudflare.com/api/webhooks/clerk
+```
+</CodeGroup>
+
+3. **For production**, use: `https://yourdomain.com/api/webhooks/clerk`
+
+4. Subscribe to these events:
+   - `user.created`
+   - `user.updated`
+   - `user.deleted`
+   - `organizationMembership.created`
+   - `organizationMembership.deleted`
+
+5. Copy the **Signing Secret** (starts with `whsec_`):
+
+```env
+CLERK_WEBHOOK_SECRET=whsec_xxx
+```
+
+</Steps>
+
+---
+
+## All Environment Variables
+
+Copy this into your `.env.local`:
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx
+CLERK_SECRET_KEY=sk_test_xxx
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/auth/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/auth/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/portal
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/portal
+CLERK_WEBHOOK_SECRET=whsec_xxx
+```
+
+Use `pk_test_` / `sk_test_` in development, `pk_live_` / `sk_live_` in production.
+
+---
+
+## Making a User a Super Admin
+
+To give a user access to the `/admin` dashboard:
+
+1. Go to **Clerk Dashboard → Users → [the user]**
+2. Click **Edit** on their Public metadata
+3. Add:
+
+```json
+{
+  "role": "super_admin"
+}
+```
+
+4. Save. The user now has access to `/admin` on next sign-in.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Webhook events aren't reaching my app">
+    Make sure your tunnel URL is reachable and matches what you entered in Clerk. Check the **Webhooks → Attempts** tab in Clerk to see delivery status.
+  </Accordion>
+
+  <Accordion title="Users aren't syncing to my database">
+    Verify `CLERK_WEBHOOK_SECRET` matches the signing secret for the webhook endpoint, not your API key. They're different values.
+  </Accordion>
+
+  <Accordion title="Organization features don't appear">
+    Double check that **Enable organizations** is toggled ON in the Clerk dashboard under Configure → Organizations.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## What's Next
+
+<CardGroup cols={2}>
+  <Card title="Stripe setup →" icon="credit-card" href="/setup/stripe">
+    Set up payments. Takes ~5 minutes.
+  </Card>
+  <Card title="Auth reference →" icon="lock" href="/build/auth">
+    Learn how Clerk integrates throughout the app.
+  </Card>
+</CardGroup>

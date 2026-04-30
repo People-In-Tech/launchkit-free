@@ -1,0 +1,13 @@
+{
+  "name": "waitlist",
+  "description": "Pre-launch waitlist with email capture and referral tracking",
+  "version": "1.0.0",
+  "files": [
+    { "src": "components/waitlist-form.tsx", "dest": "components/plugins/waitlist/waitlist-form.tsx" },
+    { "src": "components/waitlist-admin.tsx", "dest": "components/plugins/waitlist/waitlist-admin.tsx" },
+    { "src": "api/route.ts", "dest": "app/api/waitlist/route.ts" },
+    { "src": "pages/waitlist-page.tsx", "dest": "app/(marketing)/waitlist/page.tsx" }
+  ],
+  "schema": "schema.ts",
+  "dependencies": []
+}

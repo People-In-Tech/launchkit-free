@@ -1,0 +1,52 @@
+---
+title: GitHub Copilot
+description: GitHub Copilot and Copilot Workspace setup for LaunchKit.
+---
+
+## Overview
+
+GitHub Copilot works with LaunchKit via `.github/copilot-instructions.md`, which gives Copilot project-wide context for completions and chat.
+
+## Setup
+
+No extra setup required. Copilot reads `.github/copilot-instructions.md` automatically once enabled in VS Code or your editor.
+
+Enable the file in VS Code settings if it isn't picked up:
+
+```json
+// .vscode/settings.json
+{
+  "github.copilot.chat.codeGeneration.instructions": [
+    { "file": ".github/copilot-instructions.md" }
+  ]
+}
+```
+
+## Copilot Chat Prompts
+
+Use `@workspace` to give Copilot full repo context:
+
+```
+@workspace Add a Drizzle migration for a new `webhooks` table with id, userId, url, and createdAt
+```
+
+```
+@workspace Explain the auth flow from Clerk middleware to the dashboard page
+```
+
+```
+@workspace How does the Stripe webhook handler validate events?
+```
+
+## Copilot Workspace
+
+For larger tasks, open the repo in [Copilot Workspace](https://githubnext.com/projects/copilot-workspace) — it plans multi-file changes across the monorepo and creates a PR draft.
+
+## Inline Completions
+
+Copilot's completions are most accurate in:
+- `packages/database/src/schema/` — schema definitions
+- `apps/web/app/api/` — API route handlers
+- `packages/email/src/templates/` — React Email templates
+
+Add a short comment above the function you want and Copilot will match the project's pattern.

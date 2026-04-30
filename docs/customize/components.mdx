@@ -1,0 +1,154 @@
+---
+title: Adding Components
+description: Add shadcn/ui components, install new ones, and create your own.
+---
+
+# Adding Components
+
+LaunchKit uses [shadcn/ui](https://ui.shadcn.com) — a collection of accessible, unstyled components you own and edit directly. Components live in `apps/web/components/ui/`.
+
+---
+
+## Adding a New shadcn Component
+
+```bash
+cd apps/web
+npx shadcn@latest add [component-name]
+```
+
+**Common components you might need:**
+
+<CodeGroup>
+```bash Calendar / Date Picker
+npx shadcn@latest add calendar
+npx shadcn@latest add date-picker
+```
+
+```bash Data Table
+npx shadcn@latest add table
+npx shadcn@latest add data-table
+```
+
+```bash Charts
+npx shadcn@latest add chart
+```
+
+```bash Form Components
+npx shadcn@latest add form
+npx shadcn@latest add select
+npx shadcn@latest add checkbox
+npx shadcn@latest add radio-group
+npx shadcn@latest add switch
+npx shadcn@latest add textarea
+npx shadcn@latest add slider
+```
+
+```bash Overlay Components
+npx shadcn@latest add sheet
+npx shadcn@latest add alert-dialog
+npx shadcn@latest add popover
+npx shadcn@latest add context-menu
+npx shadcn@latest add menubar
+```
+
+```bash Navigation
+npx shadcn@latest add navigation-menu
+npx shadcn@latest add pagination
+npx shadcn@latest add breadcrumb
+npx shadcn@latest add command
+```
+</CodeGroup>
+
+The component file will be added to `apps/web/components/ui/`. You can edit it directly.
+
+---
+
+## Using a Component
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export function MyFeature() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>My Feature</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Button>Click me</Button>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+---
+
+## Creating a Custom Component
+
+For feature-specific components, create them in `apps/web/components/[domain]/`:
+
+```tsx
+// apps/web/components/feedback/FeedbackCard.tsx
+import { Card, CardContent } from "@/components/ui/card";
+import { Star } from "lucide-react";
+
+interface FeedbackCardProps {
+  message: string;
+  rating: number;
+  author: string;
+}
+
+export function FeedbackCard({ message, rating, author }: FeedbackCardProps) {
+  return (
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex gap-1 mb-2">
+          {Array.from({ length: rating }).map((_, i) => (
+            <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          ))}
+        </div>
+        <p className="text-sm text-muted-foreground">"{message}"</p>
+        <p className="text-xs font-medium mt-2">— {author}</p>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+---
+
+## Customizing an Existing Component
+
+Components in `apps/web/components/ui/` are yours to edit. They're not pulled from a package — shadcn/ui copies the source into your project.
+
+For example, to make all buttons a bit larger by default:
+
+```tsx
+// apps/web/components/ui/button.tsx
+const buttonVariants = cva(
+  "... your base classes ...",
+  {
+    variants: {
+      size: {
+        default: "h-10 px-5 py-2",   // ← was h-9 px-4 py-2
+        sm: "h-8 rounded-md px-3",
+        lg: "h-12 rounded-md px-8",  // ← was h-11
+      },
+    },
+  }
+);
+```
+
+---
+
+## Component Libraries That Work With shadcn/ui
+
+- **[21st.dev](https://21st.dev)** — Copy-paste shadcn-compatible blocks
+- **[magicui.design](https://magicui.design)** — Animated components
+- **[aceternity.com](https://ui.aceternity.com)** — Dramatic animated sections
+- **[originui.com](https://originui.com)** — Clean UI components
+- **[shadcn-extension](https://shadcn-extension.vercel.app)** — Extended shadcn primitives
+
+All of these output code you paste directly into your components folder.

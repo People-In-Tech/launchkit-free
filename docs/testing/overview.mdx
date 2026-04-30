@@ -1,0 +1,92 @@
+---
+title: Testing Overview
+description: LaunchKit ships with Playwright BDD tests and a manual QA checklist. Here's the testing strategy.
+---
+
+## Overview
+
+LaunchKit includes two layers of testing:
+
+| Layer | Tool | When to use |
+|-------|------|-------------|
+| Manual QA | `QA_CHECKLIST.md` | Before every major release — run the full checklist |
+| Automated E2E | Playwright + BDD | CI/CD — runs on every PR, blocks deploys on failures |
+
+## Test Structure
+
+```
+apps/web/
+├── playwright.bdd.config.ts       # Playwright + BDD configuration
+└── e2e/
+    ├── features/                  # Gherkin .feature files
+    │   ├── landing-page.feature
+    │   ├── auth.feature
+    │   ├── checkout.feature
+    │   ├── mobile.feature
+    │   └── post-purchase.feature
+    └── steps/                     # TypeScript step definitions
+        ├── common.steps.ts
+        ├── landing.steps.ts
+        ├── auth.steps.ts
+        ├── checkout.steps.ts
+        └── mobile.steps.ts
+```
+
+## Running Tests
+
+```bash
+# All BDD tests
+pnpm test:bdd
+
+# Smoke tests only (fast, ~2 min)
+pnpm test:bdd:smoke
+
+# Checkout flow only
+pnpm test:bdd:checkout
+
+# Mobile tests only
+pnpm test:bdd:mobile
+```
+
+## Test Tags
+
+Tests are tagged for selective runs:
+
+| Tag | Tests included |
+|-----|---------------|
+| `@smoke` | Landing page, navigation, basic auth |
+| `@checkout` | Full purchase flow |
+| `@mobile` | Mobile responsiveness |
+| `@webhook` | Stripe webhook handling |
+
+## Environment Setup
+
+Copy the test environment file:
+
+```bash
+cp apps/web/e2e/.env.test.example apps/web/e2e/.env.test
+```
+
+Fill in Stripe test keys before running checkout tests. See [Stripe Testing](/testing/stripe).
+
+## CI Integration
+
+Add to your GitHub Actions workflow:
+
+```yaml
+- name: Run smoke tests
+  run: pnpm test:bdd:smoke
+  env:
+    BASE_URL: ${{ vars.STAGING_URL }}
+```
+
+## Manual QA
+
+The full manual checklist is in `QA_CHECKLIST.md` at the repo root. Run through it before cutting a release. It covers:
+
+- Critical user paths (signup → purchase → access)
+- All dashboard pages
+- Mobile responsiveness
+- Email delivery
+- Stripe webhooks
+- Edge cases

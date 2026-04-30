@@ -1,0 +1,68 @@
+---
+title: Custom Domain
+description: Connect your domain to your Vercel deployment.
+---
+
+# Custom Domain
+
+<Steps>
+
+### Add the domain in Vercel
+
+1. Go to your Vercel project → **Settings → Domains**
+2. Click **Add domain**
+3. Enter your domain (e.g. `app.yourdomain.com` or `yourdomain.com`)
+4. Click **Add**
+
+### Update your DNS
+
+Vercel will show you the DNS records to add. Copy them into your DNS provider (Cloudflare, Namecheap, etc.):
+
+**For an apex domain (`yourdomain.com`):**
+
+| Type | Name | Value |
+|---|---|---|
+| `A` | `@` | `76.76.21.21` |
+
+**For a subdomain (`app.yourdomain.com`):**
+
+| Type | Name | Value |
+|---|---|---|
+| `CNAME` | `app` | `cname.vercel-dns.com` |
+
+<Tip>
+  Cloudflare users: disable the proxy (orange cloud → gray cloud) for the CNAME record. Vercel manages its own edge network.
+</Tip>
+
+### Update your environment variables
+
+Once your domain is live, update `NEXT_PUBLIC_APP_URL` in Vercel:
+
+```env
+NEXT_PUBLIC_APP_URL=https://yourdomain.com
+```
+
+Redeploy after updating:
+
+```bash
+git commit --allow-empty -m "chore: trigger redeploy for domain update"
+git push origin main
+```
+
+</Steps>
+
+---
+
+## SSL
+
+Vercel provisions an SSL certificate automatically once your DNS records are verified. No action needed.
+
+---
+
+## Clerk Domain Update
+
+Clerk validates your domain for OAuth redirects. After switching to a custom domain:
+
+1. Go to **Clerk Dashboard → Domains**
+2. Add your production domain
+3. Follow the verification steps (usually a DNS TXT record)

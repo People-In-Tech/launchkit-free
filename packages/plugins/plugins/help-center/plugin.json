@@ -1,0 +1,15 @@
+{
+  "name": "help-center",
+  "description": "Self-serve help center with categories, articles, and search",
+  "version": "1.0.0",
+  "files": [
+    { "src": "components/help-search.tsx", "dest": "components/plugins/help-center/help-search.tsx" },
+    { "src": "components/article-list.tsx", "dest": "components/plugins/help-center/article-list.tsx" },
+    { "src": "components/article-page.tsx", "dest": "components/plugins/help-center/article-page.tsx" },
+    { "src": "api/route.ts", "dest": "app/api/help/search/route.ts" },
+    { "src": "pages/help-page.tsx", "dest": "app/help/page.tsx" },
+    { "src": "pages/help-article-page.tsx", "dest": "app/help/[slug]/page.tsx" }
+  ],
+  "schema": "schema.ts",
+  "dependencies": []
+}

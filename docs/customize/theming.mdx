@@ -1,0 +1,156 @@
+---
+title: Theming & Colors
+description: Customize LaunchKit's colors, dark mode, fonts, and design tokens.
+---
+
+# Theming & Colors
+
+LaunchKit uses Tailwind CSS with [shadcn/ui CSS variables](https://ui.shadcn.com/theming) for theming. Dark mode is included out of the box.
+
+---
+
+## Primary Color
+
+The primary color (default: indigo `#6366f1`) is used for buttons, links, and accents.
+
+**Change it in `apps/web/app/globals.css`:**
+
+```css
+:root {
+  --primary: 238.7 83.5% 66.7%;           /* ← Change this (HSL) */
+  --primary-foreground: 0 0% 100%;
+}
+
+.dark {
+  --primary: 238.7 83.5% 66.7%;           /* ← Same or different for dark */
+  --primary-foreground: 0 0% 100%;
+}
+```
+
+<Tip>
+  Convert a hex color to HSL at [hslpicker.com](https://hslpicker.com). shadcn/ui uses space-separated HSL values (not `hsl()`).
+</Tip>
+
+**Quick color palette presets:**
+
+<CodeGroup>
+```css Blue (default indigo)
+--primary: 238.7 83.5% 66.7%;
+```
+
+```css Violet
+--primary: 262.1 83.3% 57.8%;
+```
+
+```css Rose
+--primary: 346.8 77.2% 49.8%;
+```
+
+```css Orange
+--primary: 24.6 95% 53.1%;
+```
+
+```css Emerald
+--primary: 160 84.1% 39.4%;
+```
+</CodeGroup>
+
+---
+
+## Full Color System
+
+shadcn/ui uses semantic CSS variables for every color. You can customize all of them:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 238.7 83.5% 66.7%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 238.7 83.5% 66.7%;
+  --radius: 0.5rem;
+}
+```
+
+Generate a complete theme at [ui.shadcn.com/themes](https://ui.shadcn.com/themes) and paste it into `globals.css`.
+
+---
+
+## Dark Mode
+
+Dark mode is managed by `next-themes`. The toggle is in `apps/web/components/shared/theme-toggle.tsx`.
+
+The default is **system** (follows OS preference). Change the default in `apps/web/components/shared/theme-provider.tsx`:
+
+```tsx
+<ThemeProvider
+  attribute="class"
+  defaultTheme="dark"   // ← "dark" | "light" | "system"
+  enableSystem
+>
+```
+
+---
+
+## Border Radius
+
+Control how rounded components are:
+
+```css
+:root {
+  --radius: 0.5rem;   /* ← 0rem = sharp, 0.5rem = medium, 1rem = round */
+}
+```
+
+---
+
+## Font
+
+The default font is the system font stack (fast, no external requests). To use a Google Font:
+
+```tsx
+// apps/web/app/layout.tsx
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className={inter.className}>
+      {children}
+    </html>
+  );
+}
+```
+
+Then update `globals.css` to use it:
+
+```css
+:root {
+  font-family: var(--font-inter), sans-serif;
+}
+```
+
+---
+
+## Tell Your AI
+
+Paste this to Claude or Cursor for an instant re-theme:
+
+```
+Update apps/web/app/globals.css to change the primary color to [your color].
+Convert [your hex] to HSL format.
+Keep the dark mode variables in sync.
+```

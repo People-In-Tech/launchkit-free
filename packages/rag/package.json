@@ -1,0 +1,14 @@
+{
+  "name": "@launchkit/rag",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "@launchkit/database": "workspace:*",
+    "ai": ">=4.0.0",
+    "@ai-sdk/openai": ">=1.0.0"
+  }
+}

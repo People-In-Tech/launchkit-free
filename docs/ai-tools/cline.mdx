@@ -1,0 +1,47 @@
+---
+title: Cline
+description: Using Cline (VS Code extension) with LaunchKit — autonomous agent setup and best prompts.
+---
+
+## Overview
+
+[Cline](https://github.com/cline/cline) is a VS Code extension that runs autonomous coding agents with full file system and terminal access. LaunchKit's `.clinerules` file gives Cline project context before it writes a line of code.
+
+## Setup
+
+1. Install the Cline extension from the VS Code marketplace
+2. Open the `launchkit/` monorepo root in VS Code
+3. Cline reads `.clinerules` automatically on first activation
+
+## What Cline Gets from `.clinerules`
+
+- Monorepo layout (apps/web, packages/database, packages/email)
+- Drizzle schema conventions
+- Clerk auth patterns (server vs. client components)
+- Stripe webhook handler location
+- Environment variable naming conventions
+
+## Effective Prompts
+
+Cline works best with outcome-oriented prompts:
+
+```
+Add a `projects` feature: Drizzle table, CRUD API routes, and a dashboard page at /dashboard/projects
+```
+
+```
+Generate a Resend email template for project invitations following the existing welcome email pattern
+```
+
+```
+Add PostHog event tracking to the checkout flow — fire events on page view, plan selection, and purchase
+```
+
+## Agent Mode vs. Inline
+
+- **Agent mode** (default): Cline plans, reads files, writes, and runs commands — best for full features
+- **Inline** (`Ctrl+K`): Targeted edits on the current file — best for component tweaks
+
+## Autonomous Operations
+
+Cline can run `pnpm` commands, push schema changes, and read test output without leaving the editor. Keep your Neon branch handy so Cline can push schema changes safely.

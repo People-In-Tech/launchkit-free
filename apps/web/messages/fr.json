@@ -1,0 +1,257 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "loading": "Chargement...",
+    "search": "Rechercher",
+    "edit": "Modifier",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "submit": "Soumettre",
+    "retry": "Réessayer",
+    "learnMore": "En savoir plus",
+    "viewAll": "Tout voir",
+    "copyToClipboard": "Copier dans le presse-papiers",
+    "copied": "Copié !"
+  },
+  "nav": {
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "blog": "Blog",
+    "changelog": "Journal des modifications",
+    "signIn": "Se connecter",
+    "getStarted": "Commencer",
+    "dashboard": "Tableau de bord",
+    "settings": "Paramètres",
+    "documentation": "Documentation"
+  },
+  "home": {
+    "badge": "Maintenant avec l'intégration d'agents IA",
+    "title": "Lancez votre SaaS",
+    "titleHighlight": "ce week-end.",
+    "subtitle": "Le kit de démarrage prêt pour la production avec authentification, facturation, équipes et IA — construit avec la stack que vous voulez vraiment utiliser.",
+    "cta": "Commencer gratuitement",
+    "secondaryCta": "Voir les fonctionnalités",
+    "featuresLabel": "Fonctionnalités",
+    "featuresTitle": "Tout ce dont vous avez besoin. Rien de superflu.",
+    "featuresSubtitle": "Une base complète pour tout SaaS — authentification, facturation, équipes, IA, administration et pages marketing.",
+    "ctaTitle": "Prêt à lancer ?",
+    "ctaSubtitle": "Arrêtez de reconstruire l'infrastructure. Commencez à construire votre produit.",
+    "footer": {
+      "tagline": "Le kit de démarrage SaaS moderne.",
+      "product": "Produit",
+      "resources": "Ressources",
+      "legal": "Juridique",
+      "terms": "Conditions",
+      "privacy": "Confidentialité",
+      "copyright": "© 2026 LaunchKit. Tous droits réservés.",
+      "builtWith": "Construit avec LaunchKit, évidemment."
+    }
+  },
+  "features": {
+    "auth": {
+      "title": "Authentification par Clerk",
+      "description": "Email, lien magique, connexions sociales, MFA et profils utilisateurs — tout préconstruit."
+    },
+    "billing": {
+      "title": "Facturation Stripe",
+      "description": "Abonnements, tarification par siège, essais gratuits et portail client."
+    },
+    "teams": {
+      "title": "Équipes Multi-Tenant",
+      "description": "Organisations, invitations d'équipe, rôles et paramètres par organisation."
+    },
+    "ai": {
+      "title": "Intégration IA",
+      "description": "Vercel AI SDK avec support multi-fournisseur, chat en streaming et système de crédits."
+    },
+    "database": {
+      "title": "Neon + Drizzle",
+      "description": "Postgres serverless avec requêtes typées et mise à l'échelle automatique."
+    },
+    "ui": {
+      "title": "shadcn/ui + Tailwind",
+      "description": "Composants élégants et accessibles. Mode sombre. Entièrement personnalisable."
+    },
+    "admin": {
+      "title": "Tableau de bord Admin",
+      "description": "Gestion des utilisateurs, analyses, métriques de revenus et surveillance de l'utilisation IA."
+    },
+    "email": {
+      "title": "Modèles d'Email",
+      "description": "React Email + Resend pour les séquences de bienvenue, alertes de facturation et invitations."
+    },
+    "dx": {
+      "title": "DX Optimisée pour l'IA",
+      "description": "Règles personnalisées pour Claude Code, Cursor et Codex. Serveur MCP inclus."
+    },
+    "plugins": {
+      "title": "Plugins et Extensions",
+      "description": "Widget de feedback, liste d'attente, témoignages, feuille de route et téléchargement de fichiers."
+    }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue. Voici un aperçu de votre espace de travail.",
+    "stats": {
+      "aiCredits": "Crédits IA",
+      "teamMembers": "Membres de l'équipe",
+      "apiCalls": "Appels API",
+      "currentPlan": "Plan actuel"
+    },
+    "recentActivity": "Activité récente",
+    "quickActions": "Actions rapides",
+    "actions": {
+      "newAiChat": "Nouveau Chat IA",
+      "inviteTeam": "Inviter l'équipe",
+      "viewAnalytics": "Voir les analyses",
+      "manageBilling": "Gérer la facturation"
+    },
+    "sidebar": {
+      "main": "Principal",
+      "aiChat": "Chat IA",
+      "analytics": "Analyses",
+      "documents": "Documents",
+      "settings": "Paramètres",
+      "general": "Général",
+      "billing": "Facturation",
+      "team": "Équipe",
+      "profile": "Profil"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Connectez-vous à votre compte",
+      "subtitle": "Bienvenue"
+    },
+    "signUp": {
+      "title": "Créez votre compte",
+      "subtitle": "Commencez gratuitement"
+    }
+  },
+  "billing": {
+    "title": "Tarification simple et transparente",
+    "subtitle": "Commencez gratuitement, évoluez selon vos besoins. Pas de frais cachés.",
+    "monthly": "Mensuel",
+    "annual": "Annuel",
+    "saveUpTo": "Économisez jusqu'à {percent}%",
+    "perMonth": "/mois",
+    "perYear": "/an",
+    "billedAnnually": "{amount}$/mois facturé annuellement",
+    "save": "Économisez {percent}%",
+    "free": "Gratuit",
+    "annualNote": "Tous les plans annuels sont facturés en un seul paiement. Vous pouvez annuler à tout moment et recevoir un remboursement au prorata des mois non utilisés.",
+    "mostPopular": "Plus Populaire",
+    "plans": {
+      "free": {
+        "name": "Gratuit",
+        "description": "Pour essayer la plateforme.",
+        "cta": "Commencer"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Pour les développeurs professionnels.",
+        "cta": "Démarrer l'essai gratuit"
+      },
+      "team": {
+        "name": "Équipe",
+        "description": "Pour les équipes et entreprises en croissance.",
+        "cta": "Contacter les ventes"
+      }
+    },
+    "features": {
+      "oneProject": "1 projet",
+      "100Credits": "100 crédits IA/mois",
+      "communitySupport": "Support communautaire",
+      "basicAnalytics": "Analyses de base",
+      "unlimitedProjects": "Projets illimités",
+      "5000Credits": "5 000 crédits IA/mois",
+      "prioritySupport": "Support prioritaire",
+      "advancedAnalytics": "Analyses avancées",
+      "customDomain": "Domaine personnalisé",
+      "teamCollaboration": "Collaboration d'équipe",
+      "everythingInPro": "Tout dans Pro",
+      "25000Credits": "25 000 crédits IA/mois",
+      "25TeamMembers": "Jusqu'à 25 membres d'équipe",
+      "adminDashboard": "Tableau de bord admin",
+      "ssoIntegration": "Intégration SSO",
+      "dedicatedSupport": "Support dédié",
+      "slaGuarantee": "Garantie SLA"
+    }
+  },
+  "settings": {
+    "general": {
+      "title": "Paramètres généraux",
+      "subtitle": "Gérez les paramètres de votre espace de travail.",
+      "workspaceName": "Nom de l'espace de travail",
+      "workspaceNameDescription": "C'est le nom affiché de votre espace de travail.",
+      "workspaceNamePlaceholder": "Nom de l'espace de travail",
+      "saveChanges": "Enregistrer les modifications",
+      "saved": "Nom de l'espace de travail enregistré.",
+      "emptyError": "Le nom de l'espace de travail ne peut pas être vide.",
+      "saveError": "Échec de l'enregistrement. Veuillez réessayer.",
+      "dangerZone": "Zone de danger",
+      "dangerDescription": "Actions irréversibles et destructives.",
+      "deleteWorkspace": "Supprimer l'espace de travail",
+      "deleteConfirm": "Êtes-vous sûr ? Cela supprimera définitivement votre espace de travail et toutes ses données.",
+      "deleted": "Espace de travail supprimé.",
+      "deleteError": "Échec de la suppression. Veuillez réessayer."
+    },
+    "billing": {
+      "title": "Paramètres de facturation",
+      "subtitle": "Gérez votre abonnement et vos moyens de paiement."
+    },
+    "team": {
+      "title": "Paramètres de l'équipe",
+      "subtitle": "Gérez les membres de votre équipe et les invitations."
+    },
+    "profile": {
+      "title": "Paramètres du profil",
+      "subtitle": "Gérez votre profil personnel."
+    }
+  },
+  "errors": {
+    "notFound": {
+      "code": "404",
+      "title": "Page non trouvée",
+      "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+      "goHome": "Accueil",
+      "goToDashboard": "Tableau de bord"
+    },
+    "generic": {
+      "title": "Une erreur est survenue",
+      "description": "Une erreur inattendue s'est produite. Notre équipe a été informée. Veuillez réessayer ou retourner à l'accueil.",
+      "tryAgain": "Réessayer",
+      "goHome": "Accueil"
+    },
+    "unauthorized": "Non autorisé",
+    "forbidden": "Interdit",
+    "serverError": "Erreur interne du serveur"
+  },
+  "upload": {
+    "dropzone": {
+      "title": "Déposez des fichiers ici ou cliquez pour parcourir",
+      "subtitle": "Supporte {types} jusqu'à {maxSize}",
+      "uploading": "Téléchargement en cours...",
+      "error": "Échec du téléchargement. Veuillez réessayer.",
+      "success": "Fichier téléchargé avec succès.",
+      "tooLarge": "Le fichier est trop volumineux. La taille maximale est {maxSize}.",
+      "invalidType": "Type de fichier invalide. Types autorisés : {types}."
+    },
+    "avatar": {
+      "change": "Changer l'avatar",
+      "remove": "Supprimer l'avatar"
+    }
+  },
+  "language": {
+    "label": "Langue",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français"
+  }
+}

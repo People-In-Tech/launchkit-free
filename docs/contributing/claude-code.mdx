@@ -1,0 +1,46 @@
+---
+title: Claude Code
+description: "Point Claude Code at LaunchKit and ship features instantly"
+---
+
+## Overview
+
+LaunchKit ships a `CLAUDE.md` at the repo root. Claude Code reads this automatically when you open the project, giving it full context about:
+
+- Monorepo structure and package layout
+- Database patterns (Drizzle + Neon)
+- API route conventions
+- AI provider factory usage
+- Critical DOs and DON'Ts
+
+## Setup
+
+No setup required. Just open the project in Claude Code:
+
+```bash
+claude  # from the launchkit/ root
+```
+
+Claude will read `CLAUDE.md` and have full context immediately.
+
+## Custom Slash Commands
+
+LaunchKit includes custom slash commands for common tasks:
+
+| Command | Description |
+|---|---|
+| `/project:scaffold` | Scaffold a new CRUD module |
+| `/project:db-push` | Push schema changes to Neon |
+| `/project:db-studio` | Open Drizzle Studio |
+| `/project:new-plugin` | Create a new plugin |
+| `/project:new-email` | Create a React Email template |
+| `/project:add-provider` | Add a new AI provider |
+| `/project:run-ci` | Run type check + lint |
+
+
+## Best Practices
+
+- Always run `/project:run-ci` after making changes
+- Use `/project:scaffold <name>` instead of manually creating CRUD files
+- Never modify `middleware.ts` without checking `publicRoutes` first
+- All AI calls must go through `getModel()` from `lib/ai.ts`

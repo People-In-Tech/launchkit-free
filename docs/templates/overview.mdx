@@ -1,0 +1,66 @@
+---
+title: Templates Overview
+description: "Six production-ready niche templates built on LaunchKit"
+---
+
+## What Are Templates?
+
+Templates are pre-built, niche-specific applications that sit on top of the LaunchKit core. Every template includes:
+
+- Full LaunchKit core (auth, billing, database, email, AI)
+- Niche-specific UI, copy, and flows
+- A **Prompt Guide** — milestone-by-milestone AI prompts to build it using tools like Claude Code, Cursor, and Antigravity
+
+<Note>
+  Templates are available with the **Pro plan** ($299). The free template includes the base LaunchKit codebase.
+</Note>
+
+## Available Templates
+
+<CardGroup cols={2}>
+  <Card title="Haveno" icon="house" href="/templates/haveno">
+    Real estate agent website — listings, lead capture, and contact forms
+  </Card>
+  <Card title="Socialhub" icon="share-nodes" href="/templates/socialhub">
+    Social media management for real estate — post scheduler and engagement analytics
+  </Card>
+  <Card title="Agenix" icon="robot" href="/templates/agenix">
+    AI automation agency site — showcase agents, capture leads, auto follow-up
+  </Card>
+  <Card title="Lexora" icon="scale-balanced" href="#">
+    Law firm website — trust-forward design with consultation booking and SMS follow-up
+  </Card>
+  <Card title="PT Pro" icon="dumbbell" href="#">
+    Personal trainer site — programs, testimonials, session booking, and email sequences
+  </Card>
+  <Card title="Haveno Social" icon="bullhorn" href="#">
+    Full social dashboard for real estate — manage posts, track engagement, convert followers
+  </Card>
+</CardGroup>
+
+## Prompt Guides
+
+Each template ships with a **Prompt Guide** — a structured set of AI prompts organized by milestone that tells you exactly how to build and customize the template using your AI coding agent.
+
+The prompts specify:
+- Which tool to use (Claude Code, Cursor, Antigravity, etc.)
+- Exactly what to ask for at each step
+- Image generation prompts using [Higgsfield AI](https://higgsfield.ai)
+
+Access prompt guides at [getlaunchkit.app/prompts](https://getlaunchkit.app/prompts).
+
+## Using a Template
+
+```bash
+# Clone the pro repo (requires purchase)
+git clone https://github.com/People-In-Tech/launchkit-pro.git my-project
+
+# Navigate to template
+cd my-project/templates/haveno
+
+# Install and configure
+pnpm install
+cp .env.example .env.local
+pnpm db:push
+pnpm dev
+```

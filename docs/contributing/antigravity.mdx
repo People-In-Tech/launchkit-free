@@ -1,0 +1,52 @@
+---
+title: Antigravity (Google)
+description: "Google's Antigravity IDE and Gemini Code Assist — context setup for LaunchKit"
+---
+
+## Overview
+
+LaunchKit ships a `.gemini/context.md` file that Google's Antigravity IDE and Gemini Code Assist read for project context. It covers:
+
+- Monorepo architecture
+- Drizzle + Neon patterns
+- Auth patterns with Clerk
+- AI provider factory (including Gemini model support)
+- Critical conventions
+
+## Setup
+
+No setup required. When you open the project in Antigravity, it reads `.gemini/context.md` automatically.
+
+## Gemini Models
+
+LaunchKit's AI factory supports Gemini natively. Use Gemini models in your app by setting:
+
+```bash
+GOOGLE_GENERATIVE_AI_API_KEY=your-key-here
+```
+
+Then call:
+
+```typescript
+import { getModel } from "@/lib/ai";
+
+const model = getModel("gemini-3.1-flash");   // Fast, cost-efficient
+const model = getModel("gemini-3.1-pro");     // Highest capability
+```
+
+## Antigravity-Specific Tips
+
+- Reference `.gemini/context.md` explicitly if the IDE doesn't pick it up automatically
+- Antigravity is a VS Code fork, so workspace settings in `.vscode/settings.json` also apply
+- For multimodal features (image understanding), use `gemini-3.1-pro` in the image API route
+
+## Vertex AI
+
+For enterprise deployments using Google Cloud Vertex AI instead of the direct Gemini API:
+
+```bash
+GOOGLE_VERTEX_PROJECT=your-gcp-project-id
+GOOGLE_VERTEX_LOCATION=us-central1  # optional, defaults to us-central1
+```
+
+Then use the same factory — it automatically routes to Vertex when `GOOGLE_VERTEX_PROJECT` is set.

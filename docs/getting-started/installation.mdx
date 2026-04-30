@@ -1,0 +1,69 @@
+---
+title: Installation
+description: "Install LaunchKit and configure your monorepo"
+---
+
+## System Requirements
+
+| Tool | Minimum Version |
+|---|---|
+| Node.js | 20.x |
+| pnpm | 9.x |
+| Git | 2.x |
+
+Install pnpm if you don't have it:
+
+```bash
+npm install -g pnpm
+```
+
+## Option A — CLI (Recommended)
+
+```bash
+npx create-launchkit@latest my-app --db=neon
+```
+
+The CLI scaffolds the project, installs dependencies, and runs migrations automatically.
+
+## Option B — Clone Free Template
+
+```bash
+git clone https://github.com/CalebKing3/launchkit.git my-app
+cd my-app
+pnpm install
+```
+
+<Note>
+  The free public template has the full codebase structure. After purchasing Pro, you'll get access to the private repo with all 6 templates and priority support.
+</Note>
+
+## Monorepo Overview
+
+LaunchKit uses [Turborepo](https://turbo.build) for monorepo task caching:
+
+```
+my-app/
+├── apps/
+│   └── web/            # Main Next.js 15 app
+├── packages/
+│   ├── database/        # Drizzle ORM + Neon
+│   ├── email/           # React Email templates
+│   ├── storage/         # Multi-provider file storage
+│   ├── config/          # Shared config types
+│   ├── plugins/         # Plugin registry
+│   ├── rag/             # RAG pipeline
+│   └── agents/          # AI agent framework
+└── scripts/
+    └── scaffold.mjs     # CRUD module generator
+```
+
+## Common Commands
+
+```bash
+pnpm dev          # Start dev server
+pnpm build        # Build for production
+pnpm typecheck    # Run TypeScript checks
+pnpm lint         # Lint all packages
+pnpm db:push      # Push schema changes to Neon
+pnpm db:studio    # Open Drizzle Studio
+```

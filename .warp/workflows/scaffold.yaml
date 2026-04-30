@@ -1,0 +1,17 @@
+---
+name: LaunchKit — Scaffold Module
+description: Generate a full CRUD module (schema + API + page + components)
+tags: [launchkit, scaffold, codegen]
+author: people-in-tech
+arguments:
+  - name: module_name
+    description: "Name of the module to scaffold (e.g. invoices, products)"
+    required: true
+---
+steps:
+  - name: Generate module
+    command: node scripts/scaffold.mjs {{module_name}}
+  - name: Push schema
+    command: pnpm db:push
+  - name: Type check
+    command: pnpm typecheck

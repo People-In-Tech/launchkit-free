@@ -1,0 +1,120 @@
+---
+description: AI chat, RAG, agents, and embeddings patterns for LaunchKit
+globs: ["apps/web/app/api/ai/**", "apps/web/components/ai/**", "packages/rag/**", "packages/agents/**"]
+alwaysApply: false
+---
+
+# AI, RAG & Agent Patterns
+
+## AI Provider Factory
+```typescript
+// ALWAYS use this — never instantiate providers directly
+import { getModel } from "@/lib/ai";
+
+const model = getModel("gpt-5.4-mini");        // OpenAI (default)
+const model = getModel("claude-sonnet-4-6");   // Anthropic
+const model = getModel("gemini-3.1-flash");    // Google
+const model = getModel("sonar-pro");           // Perplexity (web search)
+```
+
+## Streaming chat
+```typescript
+import { streamText } from "ai";
+import { getModel } from "@/lib/ai";
+
+const result = streamText({
+  model: getModel(modelId),
+  system: "You are a helpful assistant.",
+  messages,
+  maxTokens: 2048,
+});
+return result.toDataStreamResponse();
+```
+
+## RAG (Retrieval-Augmented Generation)
+```typescript
+import { embedAndStore, searchSimilar, ragComplete } from "@launchkit/rag";
+
+// 1. Store documents (e.g. on file upload or user input)
+await embedAndStore({
+  id: "unique-doc-id",
+  content: "Your document text here",
+  metadata: { source: "user-upload", userId },
+});
+
+// 2. Search for relevant context
+const docs = await searchSimilar("user query", { k: 5, userId });
+
+// 3. RAG-powered chat (retrieves context automatically)
+const stream = await ragComplete({
+  messages,
+  userId,
+  modelId: "gpt-5.4-mini",
+  k: 5,  // top-k documents to retrieve
+});
+```
+
+## Agent with tools
+```typescript
+import { createAgent } from "@launchkit/agents";
+
+const agent = createAgent({
+  modelId: "gpt-5.4-mini",
+  tools: ["search", "code", "db"],  // pre-built tool names
+  memory: true,                      // pgvector memory
+  systemPrompt: "You are a helpful coding assistant.",
+});
+
+// Streaming response
+const stream = await agent.stream(messages);
+return stream.toDataStreamResponse();
+```
+
+## Custom agent tool
+```typescript
+import { tool } from "ai";
+import { z } from "zod";
+
+const myTool = tool({
+  description: "What this tool does",
+  parameters: z.object({
+    query: z.string().describe("The search query"),
+  }),
+  execute: async ({ query }) => {
+    // Tool implementation
+    return { result: "..." };
+  },
+});
+```
+
+## Track AI usage (teams)
+```typescript
+// Add to onFinish callback of streamText
+onFinish: async ({ usage }) => {
+  await db.insert(aiUsage).values({
+    userId,
+    orgId,
+    model: modelId,
+    promptTokens: usage.promptTokens,
+    completionTokens: usage.completionTokens,
+    totalTokens: usage.totalTokens,
+    cost: calculateCost(modelId, usage),
+  });
+}
+```
+
+## Embeddings
+```typescript
+import { embed, embedMany } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const { embedding } = await embed({
+  model: openai.embedding("text-embedding-3-small"),
+  value: "text to embed",
+});
+
+const { embeddings } = await embedMany({
+  model: openai.embedding("text-embedding-3-small"),
+  values: ["text 1", "text 2"],
+});
+```

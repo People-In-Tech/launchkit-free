@@ -1,0 +1,165 @@
+---
+title: Stripe (Payments)
+description: Set up one-time and subscription billing with Stripe. Includes Apple Pay, Google Pay, and Link.
+---
+
+# Stripe — Payments
+
+<Info>**Setup time: ~5 minutes** — Create your products and price IDs, get your API keys, set up the webhook listener. The Stripe CLI handles local webhooks automatically.</Info>
+
+LaunchKit uses [Stripe](https://stripe.com) for payments. Apple Pay, Google Pay, and Stripe Link are enabled automatically through Stripe Checkout. No extra configuration needed.
+
+<Note>
+  The `.env.example` has two sets of Stripe vars: one for **LaunchKit's own license** (the product you're selling), and one for **your SaaS subscription billing** (the template inside). This guide covers setting up billing for your SaaS — not LaunchKit's sales.
+</Note>
+
+---
+
+## Your SaaS Billing (What Buyers Configure)
+
+This is the subscription/purchase billing inside your app — what your end users pay for.
+
+<Steps>
+
+### Get your API keys
+
+1. Go to [dashboard.stripe.com](https://dashboard.stripe.com)
+2. Navigate to **Developers → API Keys**
+3. Use **Test mode** for development
+
+```env
+STRIPE_SECRET_KEY=sk_test_xxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+BILLING_PROVIDER=stripe
+```
+
+### Create your products and prices
+
+LaunchKit's billing template ships with Pro and Team plans. Create them in Stripe:
+
+1. Go to **Products → Add product**
+2. Create **Pro** — set price to $29/month (or whatever you want)
+3. Click the price ID (starts with `price_`) and copy it
+4. Repeat for **Team** ($79/month) and any yearly variants
+
+```env
+STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
+STRIPE_PRO_YEARLY_PRICE_ID=price_xxx
+STRIPE_TEAM_MONTHLY_PRICE_ID=price_xxx
+STRIPE_TEAM_YEARLY_PRICE_ID=price_xxx
+```
+
+### Set up the webhook
+
+**For local development:**
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Login
+stripe login
+
+# Forward webhooks to your local server
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+Copy the secret it prints (starts with `whsec_`):
+
+```env
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
+
+**For production**, add an endpoint in Stripe Dashboard → Webhooks:
+
+```
+https://yourdomain.com/api/webhooks/stripe
+```
+
+Subscribe to these events:
+- `checkout.session.completed`
+- `customer.subscription.created`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+- `invoice.payment_failed`
+
+</Steps>
+
+---
+
+## Test Cards
+
+| Card Number | Use Case |
+|---|---|
+| `4242 4242 4242 4242` | Successful payment |
+| `4000 0000 0000 0002` | Declined payment |
+| `4000 0025 0000 3155` | 3D Secure auth required |
+
+Use any future expiry date and any 3-digit CVV.
+
+---
+
+## Enable Apple Pay / Google Pay
+
+Stripe Checkout enables these automatically — no code changes needed. For Apple Pay on your own domain, verify your domain in the Stripe Dashboard:
+
+1. Go to **Settings → Payment methods → Apple Pay**
+2. Click **Add domain**
+3. Enter your domain and follow the verification steps
+
+---
+
+## Tax (Inclusive Pricing)
+
+LaunchKit configures Stripe with **inclusive tax** — meaning your stated price is what the customer pays. Stripe calculates and remits the tax component automatically.
+
+Set up tax in Stripe Dashboard → **Tax** → enable automatic tax collection. Then when you create prices, enable "Tax inclusive" in the pricing settings.
+
+---
+
+## All Environment Variables
+
+```env
+# Required
+BILLING_PROVIDER=stripe
+STRIPE_SECRET_KEY=sk_test_xxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+# Your SaaS plan price IDs
+STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
+STRIPE_PRO_YEARLY_PRICE_ID=price_xxx
+STRIPE_TEAM_MONTHLY_PRICE_ID=price_xxx
+STRIPE_TEAM_YEARLY_PRICE_ID=price_xxx
+```
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Webhook signature mismatch">
+    There are two secrets — one from `stripe listen` (for local), one from the Stripe Dashboard (for production). Make sure you're using the correct one for your environment. They are different.
+  </Accordion>
+
+  <Accordion title="Apple Pay isn't showing up">
+    Apple Pay only works on verified domains over HTTPS. It won't appear on localhost.
+  </Accordion>
+
+  <Accordion title="Checkout session returns 500">
+    Check that your price IDs exist and are in the correct Stripe mode (test vs live). A `price_xxx` from test mode won't work with live API keys.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## What's Next
+
+<CardGroup cols={2}>
+  <Card title="Resend setup →" icon="envelope" href="/setup/resend">
+    Set up email. Takes ~1 minute.
+  </Card>
+  <Card title="Billing reference →" icon="credit-card" href="/build/billing">
+    Learn how the billing flow works end-to-end.
+  </Card>
+</CardGroup>

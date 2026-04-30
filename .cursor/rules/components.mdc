@@ -1,0 +1,103 @@
+---
+description: React component patterns, shadcn/ui, and Tailwind for LaunchKit
+globs: ["apps/web/components/**", "apps/web/app/**/page.tsx"]
+alwaysApply: false
+---
+
+# Component Patterns
+
+## Server Component (default)
+```typescript
+// No "use client" — Server Component by default
+import { auth } from "@clerk/nextjs/server";
+import { db } from "@launchkit/database";
+
+export default async function MyPage() {
+  const { userId } = await auth();
+  const data = await db.select().from(myTable);
+  return <div>{/* JSX */}</div>;
+}
+```
+
+## Client Component
+```typescript
+"use client";
+
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface MyComponentProps {
+  initialData?: MyType[];
+  className?: string;
+}
+
+export function MyComponent({ initialData = [], className }: MyComponentProps) {
+  const [loading, setLoading] = useState(false);
+
+  async function handleAction() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/my-route", { method: "POST" });
+      if (!res.ok) throw new Error("Failed");
+      toast.success("Done!");
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className={cn("flex flex-col gap-4", className)}>
+      <Button onClick={handleAction} disabled={loading}>
+        {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+        Do action
+      </Button>
+    </div>
+  );
+}
+```
+
+## Data table pattern
+Use `@/components/ui/table` (shadcn):
+```typescript
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+```
+
+## Form pattern
+Use `react-hook-form` + `zod` + shadcn Form:
+```typescript
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+```
+
+## Dashboard page layout
+```typescript
+export default function MyPage() {
+  return (
+    <div className="flex flex-col gap-6 p-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Page Title</h1>
+        <p className="text-muted-foreground text-sm mt-1">Page description</p>
+      </div>
+      {/* Content */}
+    </div>
+  );
+}
+```
+
+## Responsive patterns
+- Mobile-first: `text-sm md:text-base`
+- Hidden on mobile: `hidden md:flex`
+- Grid: `grid gap-4 sm:grid-cols-2 lg:grid-cols-3`
+- Section padding: `py-14 md:py-24`
+
+## shadcn/ui components available
+Button, Input, Textarea, Select, Checkbox, Dialog, Sheet, Card, Badge, 
+Avatar, Dropdown, Tabs, Table, Skeleton, Separator, Label, Switch, Slider,
+Command, Popover, Calendar, Tooltip, Alert, Progress, ScrollArea

@@ -1,0 +1,61 @@
+---
+title: Billing Overview
+description: "One-time payments with Stripe — Apple Pay, Google Pay, and Link included"
+---
+
+## How Billing Works
+
+LaunchKit uses [Stripe Checkout](https://stripe.com/docs/payments/checkout) for all payments. The setup ships with:
+
+- **One-time purchases** — $149 Solo / $299 Teams
+- **Tax-inclusive pricing** — end users always pay exactly what's shown
+- **Apple Pay, Google Pay, and Stripe Link** — enabled automatically via Checkout
+- **Webhooks** — access is granted automatically on `checkout.session.completed`
+
+## Purchase Flow
+
+1. User clicks "Get LaunchKit" on the pricing page
+2. They're redirected to Stripe Checkout (hosted, no custom form needed)
+3. On success, `checkout.session.completed` fires your webhook
+4. Webhook handler provisions access and stores the purchase in Neon
+5. User is redirected to the dashboard
+
+## Webhook Handler
+
+The webhook lives at `apps/web/app/api/webhooks/stripe/route.ts`. It handles:
+
+- `checkout.session.completed` → grant access, store purchase
+- `checkout.session.expired` → clean up abandoned sessions
+- `payment_intent.payment_failed` → log failure for retry
+
+## Checking Access
+
+```typescript
+import { db } from "@launchkit/database";
+import { purchases } from "@launchkit/database/schema/purchases";
+
+export async function hasAccess(userId: string): Promise<boolean> {
+  const purchase = await db
+    .select()
+    .from(purchases)
+    .where(eq(purchases.userId, userId))
+    .limit(1);
+  
+  return purchase.length > 0;
+}
+```
+
+## Pricing Page
+
+The pricing page is at `apps/web/app/pricing/page.tsx`. Price IDs are pulled from environment variables:
+
+```bash
+STRIPE_SOLO_PRICE_ID=price_...    # $149 one-time
+STRIPE_TEAMS_PRICE_ID=price_...   # $299 one-time
+```
+
+## Next Steps
+
+<Card title="Stripe Setup" icon="stripe" href="/billing/stripe-setup">
+  Configure Stripe products, prices, webhooks, and tax
+</Card>

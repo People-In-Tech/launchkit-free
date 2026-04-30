@@ -1,0 +1,48 @@
+{
+  "name": "create-launchkit",
+  "version": "1.0.0",
+  "description": "Create a new LaunchKit SaaS app",
+  "keywords": [
+    "launchkit",
+    "saas",
+    "boilerplate",
+    "nextjs",
+    "create"
+  ],
+  "homepage": "https://getlaunchkit.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CalebKing3/launchkit"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "create-launchkit": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/stack-prompts.ts src/scaffolders/supabase.ts src/scaffolders/nextauth.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --watch",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "ora": "^8.1.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/prompts": "^2.4.9",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

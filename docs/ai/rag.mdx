@@ -1,0 +1,120 @@
+---
+title: RAG (Retrieval-Augmented Generation)
+description: Add vector search and document retrieval to your LaunchKit app using Neon's pgvector extension.
+---
+
+## Overview
+
+LaunchKit supports RAG out of the box using [Neon's pgvector](https://neon.tech/docs/extensions/pgvector) extension. Store embeddings alongside your app data — no separate vector DB needed.
+
+## Enable pgvector
+
+Run this once in your Neon SQL editor or via migration:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+## Schema
+
+Add a vector column to any table:
+
+```ts
+import { vector } from "drizzle-orm/pg-core";
+
+export const documents = pgTable("documents", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  embedding: vector("embedding", { dimensions: 1536 }),  // OpenAI text-embedding-3-small
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+```
+
+## Generating Embeddings
+
+```ts
+import { embed } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+export async function generateEmbedding(text: string) {
+  const { embedding } = await embed({
+    model: openai.embedding("text-embedding-3-small"),
+    value: text,
+  });
+  return embedding;
+}
+```
+
+## Similarity Search
+
+```ts
+import { cosineDistance, desc, gt, sql } from "drizzle-orm";
+import { db } from "@launchkit/database";
+import { documents } from "@launchkit/database/schema";
+
+export async function searchDocuments(query: string, userId: string) {
+  const queryEmbedding = await generateEmbedding(query);
+
+  const results = await db
+    .select({
+      id: documents.id,
+      content: documents.content,
+      similarity: sql<number>`1 - (${cosineDistance(documents.embedding, queryEmbedding)})`,
+    })
+    .from(documents)
+    .where(gt(cosineDistance(documents.embedding, queryEmbedding), 0.5))
+    .orderBy(desc(sql`similarity`))
+    .limit(5);
+
+  return results;
+}
+```
+
+## Ingestion API Route
+
+```ts
+// app/api/documents/route.ts
+import { auth } from "@clerk/nextjs/server";
+import { db } from "@launchkit/database";
+import { documents } from "@launchkit/database/schema";
+import { generateEmbedding } from "@/lib/ai/embeddings";
+
+export async function POST(req: Request) {
+  const { userId } = await auth();
+  if (!userId) return new Response("Unauthorized", { status: 401 });
+
+  const { content, metadata } = await req.json();
+  const embedding = await generateEmbedding(content);
+
+  await db.insert(documents).values({
+    userId,
+    content,
+    embedding,
+    metadata,
+  });
+
+  return Response.json({ success: true });
+}
+```
+
+## HNSW Index
+
+Add an HNSW index for production-scale search performance:
+
+```sql
+CREATE INDEX ON documents USING hnsw (embedding vector_cosine_ops);
+```
+
+Or via Drizzle:
+
+```ts
+import { index } from "drizzle-orm/pg-core";
+
+// In your table definition
+(table) => ({
+  embeddingIdx: index("documents_embedding_idx")
+    .using("hnsw", table.embedding.op("vector_cosine_ops")),
+})
+```

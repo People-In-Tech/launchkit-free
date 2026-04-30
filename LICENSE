@@ -1,0 +1,53 @@
+LaunchKit Commercial License
+Copyright (c) 2026 Caleb King / People In Tech
+
+TERMS AND CONDITIONS
+
+1. GRANT OF LICENSE
+
+   Upon purchase of a valid LaunchKit license at https://getlaunchkit.app,
+   Licensor grants you a non-exclusive, non-transferable license to:
+
+   a. Solo License ($149): Use this software in one (1) commercial project
+      for one (1) developer.
+
+   b. Teams License ($299): Use this software in unlimited commercial projects
+      for an unlimited number of developers within your organization.
+
+2. PERMITTED USES
+
+   With a valid license you may:
+   - Use, copy, and modify the software for your own projects
+   - Deploy the software to production environments
+   - Create derivative works for your own use
+
+3. RESTRICTIONS
+
+   Without a valid license you may NOT:
+   - Use the software in any commercial project or product
+   - Redistribute, sublicense, sell, or transfer the software
+   - Remove or alter any copyright notices or license headers
+   - Use the software to create a competing SaaS starter kit product
+
+4. PREVIEW ACCESS
+
+   The source code in this public repository is made available for evaluation
+   purposes only. Viewing and forking the code does not constitute a license
+   to use it in any project. A commercial license must be purchased before
+   use in any project.
+
+5. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES,
+   OR OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+6. TERMINATION
+
+   This license is effective until terminated. It terminates automatically if
+   you fail to comply with any term of this license.
+
+---
+
+To purchase a license, visit: https://getlaunchkit.app/pricing
+For licensing questions, contact: hello@getlaunchkit.app

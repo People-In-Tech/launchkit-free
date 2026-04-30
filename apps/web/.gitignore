@@ -1,0 +1,6 @@
+.vercel
+
+# Playwright BDD auth state (generated, contains session tokens)
+e2e/.auth/
+e2e/.env.test
+playwright-report-bdd/

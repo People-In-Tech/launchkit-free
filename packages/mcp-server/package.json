@@ -1,0 +1,16 @@
+{
+  "name": "@launchkit/mcp-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "bin": {
+    "launchkit-mcp": "./src/index.ts"
+  },
+  "scripts": {
+    "start": "node --loader ts-node/esm src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

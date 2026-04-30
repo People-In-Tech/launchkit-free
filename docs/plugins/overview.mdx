@@ -1,0 +1,59 @@
+---
+title: Plugins Overview
+description: "8 drop-in plugins — feedback, waitlist, testimonials, and more"
+---
+
+## What Are Plugins?
+
+LaunchKit plugins are self-contained modules that add features to your app with a single import. No external services required — they use your existing Neon database.
+
+## Available Plugins
+
+| Plugin | Description | Import |
+|---|---|---|
+| **Feedback Widget** | In-app feedback with sentiment tagging, routes to admin | `@launchkit/plugins/feedback` |
+| **Testimonials** | Collect and display customer testimonials with star ratings | `@launchkit/plugins/testimonials` |
+| **Product Roadmap** | Public roadmap with voting and status updates | `@launchkit/plugins/roadmap` |
+| **Waitlist Manager** | Pre-launch waitlist with referral links and drip email | `@launchkit/plugins/waitlist` |
+| **File Uploads** | Drag-and-drop uploads with Vercel Blob or S3 | `@launchkit/plugins/uploads` |
+| **AI Image Generator** | DALL-E 3, Flux, or Stable Diffusion in your dashboard | `@launchkit/plugins/image-gen` |
+| **Scaffold CLI** | Generate CRUD modules with one command | `node scripts/scaffold.mjs` |
+| **Dev Toolbar** | Floating dev overlay — user info, flags, shortcuts | `@launchkit/plugins/dev-toolbar` |
+
+## Using a Plugin
+
+Add a plugin to any dashboard page with a single import:
+
+```typescript
+// apps/web/app/dashboard/feedback/page.tsx
+import { FeedbackWidget } from "@launchkit/plugins/feedback";
+
+export default function FeedbackPage() {
+  return <FeedbackWidget />;
+}
+```
+
+Add it to the sidebar nav in `apps/web/components/dashboard/sidebar.tsx`.
+
+## Plugin Registry
+
+View all registered plugins and their status in the plugin registry:
+
+```typescript
+import { plugins } from "@launchkit/plugins";
+
+// List all available plugins
+console.log(plugins.list());
+
+// Check if a plugin is enabled
+console.log(plugins.isEnabled("feedback"));
+```
+
+## Building a Custom Plugin
+
+Use `/project:new-plugin` in Claude Code, or follow the pattern in `packages/plugins/src/`. Every plugin exports:
+
+- A React component (the UI)
+- An API route handler (the data layer)
+- A database schema (if it stores data)
+- A manifest (name, description, version)

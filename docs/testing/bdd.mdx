@@ -1,0 +1,119 @@
+---
+title: BDD / Playwright Tests
+description: LaunchKit uses playwright-bdd with Gherkin feature files. Write tests in plain English, run them with Playwright.
+---
+
+## Overview
+
+LaunchKit uses [playwright-bdd](https://github.com/vitalets/playwright-bdd) — Gherkin feature files paired with Playwright step definitions. Non-technical stakeholders can read and write scenarios; engineers implement the steps once.
+
+## Configuration
+
+```ts
+// apps/web/playwright.bdd.config.ts
+import { defineConfig } from "@playwright/test";
+import { defineBddConfig } from "playwright-bdd";
+
+const testDir = defineBddConfig({
+  features: "e2e/features/**/*.feature",
+  steps: "e2e/steps/**/*.ts",
+});
+
+export default defineConfig({
+  testDir,
+  use: {
+    baseURL: process.env.BASE_URL || "http://localhost:3000",
+  },
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "mobile", use: { ...devices["iPhone 14"] } },
+  ],
+});
+```
+
+## Writing a Feature
+
+```gherkin
+# e2e/features/checkout.feature
+@checkout
+Feature: Stripe Checkout
+
+  Background:
+    Given I am on the pricing page
+
+  Scenario: Solo plan purchase
+    When I click "Get Solo"
+    Then I should be redirected to Stripe Checkout
+    And the checkout should show "$149"
+
+  Scenario: Successful payment
+    Given I am on the Stripe Checkout page
+    When I fill in the test card "4242424242424242"
+    And I complete the checkout
+    Then I should be redirected to the success page
+    And I should see "Your purchase is confirmed"
+```
+
+## Writing Step Definitions
+
+```ts
+// e2e/steps/checkout.steps.ts
+import { createBdd } from "playwright-bdd";
+
+const { Given, When, Then } = createBdd();
+
+Given("I am on the pricing page", async ({ page }) => {
+  await page.goto("/pricing");
+});
+
+When("I click {string}", async ({ page }, buttonText) => {
+  await page.getByRole("button", { name: buttonText }).click();
+});
+
+Then("I should be redirected to Stripe Checkout", async ({ page }) => {
+  await page.waitForURL(/checkout\.stripe\.com/);
+  await expect(page).toHaveURL(/checkout\.stripe\.com/);
+});
+```
+
+## Generating Tests from Features
+
+After writing `.feature` files, generate the test files:
+
+```bash
+pnpm exec bddgen
+```
+
+This creates `.spec.ts` files in `e2e/.features-gen/`. Commit these — they're what Playwright actually runs.
+
+## Running Specific Tags
+
+```bash
+# Run only @smoke tests
+pnpm playwright test --grep @smoke
+
+# Run only @checkout tests
+pnpm playwright test --grep @checkout
+
+# Or via npm scripts
+pnpm test:bdd:checkout
+```
+
+## Debugging
+
+Open Playwright's UI mode for visual debugging:
+
+```bash
+pnpm playwright test --ui
+```
+
+Step through each scenario visually, inspect DOM state, and screenshot on failure.
+
+## Adding New Scenarios
+
+1. Write the scenario in the appropriate `.feature` file
+2. Run `pnpm exec bddgen` — Playwright will error on undefined steps
+3. Implement missing steps in the corresponding `steps/*.ts` file
+4. Run `pnpm test:bdd` to verify
+
+Keep scenarios high-level (user behavior) and steps reusable. Don't put assertions in `Given`/`When` steps — only in `Then`.

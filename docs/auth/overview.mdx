@@ -1,0 +1,92 @@
+---
+title: Auth Overview
+description: "Authentication with Clerk — email, social, magic link, MFA, and organizations"
+---
+
+## How Auth Works
+
+LaunchKit uses [Clerk](https://clerk.com) for all authentication. Clerk handles the full auth lifecycle:
+
+- Sign up / sign in UI (hosted or embedded)
+- Email, social login, magic link, passkeys, MFA
+- User profiles and organization management
+- Session management and JWT tokens
+- Webhooks to sync user data to your Neon database
+
+## Middleware
+
+All routes are protected by default via `middleware.ts`. To make a route public, add it to `publicRoutes`:
+
+```typescript
+// apps/web/middleware.ts
+export default clerkMiddleware(async (auth, request) => {
+  if (isPublicRoute(request)) return;
+  await auth.protect();
+});
+
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/pricing",
+  "/templates(.*)",
+  "/prompts(.*)",
+  "/api/webhooks(.*)",
+  // add more here
+]);
+```
+
+<Warning>
+  Never bypass middleware for protected routes. Add unauthenticated routes to `publicRoutes` instead of removing auth checks from components.
+</Warning>
+
+## Checking Auth in API Routes
+
+```typescript
+import { auth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  const { userId, orgId } = await auth();
+  
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  
+  // orgId is set when user is in an organization context
+  // ...
+}
+```
+
+## Checking Auth in Server Components
+
+```typescript
+import { auth, currentUser } from "@clerk/nextjs/server";
+
+export default async function DashboardPage() {
+  const { userId } = await auth();
+  const user = await currentUser();
+  
+  return <div>Hello, {user?.firstName}</div>;
+}
+```
+
+## Organizations (Teams)
+
+LaunchKit supports multi-tenant organizations via Clerk. Each org gets its own isolated data:
+
+```typescript
+const { userId, orgId, orgRole } = await auth();
+
+// orgRole is "org:admin" or "org:member"
+const isAdmin = orgRole === "org:admin";
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Clerk Setup" icon="key" href="/auth/clerk-setup">
+    Configure Clerk dashboard, webhooks, and social providers
+  </Card>
+  <Card title="Billing" icon="credit-card" href="/billing/overview">
+    Gate features behind paid plans
+  </Card>
+</CardGroup>

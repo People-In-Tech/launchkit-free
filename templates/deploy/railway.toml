@@ -1,0 +1,11 @@
+[build]
+builder = "nixpacks"
+buildCommand = "pnpm turbo build --filter=web"
+
+[deploy]
+startCommand = "node apps/web/.next/standalone/apps/web/server.js"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+
+[service]
+internalPort = 3000
