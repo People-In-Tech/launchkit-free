@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useOptionalAuth } from "@/lib/use-optional-auth";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,7 @@ export function CheckoutButton({
   variant,
   className,
 }: CheckoutButtonProps) {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useOptionalAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 

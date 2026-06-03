@@ -2,14 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useOptionalAuth } from "@/lib/use-optional-auth";
 
 // Auto-submits the Stripe checkout flow when ?auto=pro|team is present and
 // the user is signed in. Used by the post-sign-up redirect from home-page CTAs.
 export function AutoCheckoutTrigger() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded } = useOptionalAuth();
   const firedRef = useRef(false);
 
   useEffect(() => {

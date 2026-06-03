@@ -1,9 +1,9 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { useOptionalAuth } from "@/lib/use-optional-auth";
 
 export interface GetLaunchKitButtonProps extends ButtonProps {
   plan?: "pro" | "team";
@@ -17,7 +17,7 @@ export function GetLaunchKitButton({
   children,
   ...props
 }: GetLaunchKitButtonProps) {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded } = useOptionalAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
